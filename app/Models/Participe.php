@@ -63,14 +63,23 @@ class Participe extends Pivot
         return $res;
     }
 
+    /**
+     * Get the adherent that owns the Participe
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function adherent(): BelongsTo
     {
         return $this->belongsTo(Adherent::class, "PAR_adherent", "ADH_id")->with("personne");
     }
 
+    /**
+     * Get the plongee that owns the Participe
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function plongee(): BelongsTo
     {
         return $this->belongsTo(Plongee::class, "PAR_plongee", "PLO_id")->with(['niveau', 'moment']);
     }
-    //TODO check participant is not in 2 dives with same date+moment
 }

@@ -75,12 +75,21 @@ class Palanquee extends Model
             ]);
         return $res;
     }
+
+    /** Gets the immersion time in the format "H:i"
+     * 
+     * @return string|null
+     */
     public function getImmersion() : ?string {
         $time = $this->PAL_heure_immersion;
         if ($time == null) return null;
         return $time->format("H:i");
     }
 
+    /** Gets the exit time in the format "H:i"
+     * 
+     * @return string|null
+     */
     public function getSortie() : ?string {
         $time = $this->PAL_heure_sortie;
         if ($time == null) return null;
@@ -99,16 +108,25 @@ class Palanquee extends Model
 
     // Relationships
 
+    /** Gets the dive where is the Palanquee
+     * 
+     * @return BelongsTo
+     */
     public function plongee(): BelongsTo
     {
         return $this->belongsTo(Plongee::class, "PAL_plongee", "PLO_id");
     }
 
+    /** Gets the members of the Palanquee
+     * 
+     * @return HasMany
+     */
     public function members(): HasMany
     {
         return $this->hasMany(Inclut::class, "INC_palanquee", "PAL_id");
     }
 
+    /** Gets the unique id for selecting in views. */
     public function isOk() : bool {
         //Log::debug("Testing Palanquee $this->PAL_id of Dive ".$this->PAL_plongee);
         $this->loadMissing('members.adherent.niveau');
@@ -157,13 +175,14 @@ class Palanquee extends Model
         foreach ($members as /** @var Inclut $member */ $member) {
             if ($member->adherent->niveau->NIV_prof_autonome < $this->PAL_max_prof
                 && ($member->adherent->niveau->NIV_prof_encadre < $this->PAL_max_prof || $encadrement==0)) {
-//                Log::debug("Palanquee!Ok: diver not autonomous enough($member->adherent->niveau->NIV_prof_autonome) or not framed enough ($member->adherent->niveau->NIV_prof_encadre) or not framed($encadrement)");
+            //Log::debug("Palanquee!Ok: diver not autonomous enough($member->adherent->niveau->NIV_prof_autonome) or not framed enough ($member->adherent->niveau->NIV_prof_encadre) or not framed($encadrement)");
                 return false; // not autonome enough, or not framed enough or not framed
             }
         }
         return true;
     }
 
+    /** Gets the unique id for selecting in views. */
     public function isNotComplete() : bool {
         return ! ($this->isOk() && isset($this->PAL_duree_realisee) && isset($this->PAL_prof_realisee)
             && isset($this->PAL_heure_sortie) && isset($this->PAL_heure_immersion));
