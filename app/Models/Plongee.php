@@ -60,6 +60,7 @@ class Plongee extends Model
      */
     protected $fillable = [
         'PLO_active',
+        'PLO_etat'
     ];
 
 
@@ -211,12 +212,13 @@ class Plongee extends Model
             $difference = $currentDate->diff($diveDate);
 
             if ($difference->y >= 1) {
-                $this->update(['PLO_active' => false]);
+                $this->update(['PLO_etat' => 4]);
             }
             return true;
         }
         return false;
     }
+
 
 
 
