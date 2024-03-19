@@ -105,7 +105,7 @@ class AdherentsController extends Controller
         $person = new Personne();
         $person->PER_nom = $data['nom'];
         $person->PER_prenom = $data['prenom'];
-        $person->PER_pass = $data['pass'];
+        $person->PER_pass = password_hash($data['pass'], PASSWORD_DEFAULT);
         $person->PER_email = $data['email'];
         $person->save();
 
