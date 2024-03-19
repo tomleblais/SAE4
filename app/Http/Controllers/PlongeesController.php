@@ -297,7 +297,15 @@ class PlongeesController extends Controller
         return Validator::validate($request->all(),[
             'id' => 'required|numeric|exists:PLO_PLONGEES,PLO_id',
             'lieu' => 'nullable|numeric|exists:PLO_LIEUX,LIE_id',
-            'bateau' => 'nullable|numeric|exists:PLO_BATEAUX,BAT_id',
+            'bateau' => ['nullable','numeric','exists:PLO_BATEAUX,BAT_id',
+                function($attribute, $value, $fail){
+                    $bateau = Bateau::find($value);
+
+                    if($bateau && $bateau->BAT_max_personnes < $request->input('max_plongeurs')){
+                        $fail('La capacité du bateau est insuffisante pour le nombre maximum de plongeurs spécifié.');
+                    }
+                }
+        ],
             'date' => 'nullable|date_format:Y-m-d',
             'moment' => 'nullable|numeric|exists:PLO_MOMENTS,MOM_id',
             'min_plongeurs' => 'nullable|numeric|min:2',
@@ -319,7 +327,7 @@ class PlongeesController extends Controller
             'etat' => 'nullable|numeric|exists:PLO_ETATS,ETA_id',
         ], ['pilote.valid'=>"Le pilote doit être autorisé.",
             'securite_de_surface.valid' => 'La sécurité de surface doit être autorisée.']);
-    }
+    }  
 
     /**
      * @param Request $request
