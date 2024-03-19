@@ -118,7 +118,15 @@ class PlongeesController extends Controller
     {
         $data = Validator::validate($request->all(), [
             'lieu' => 'required|numeric|exists:PLO_LIEUX,LIE_id',
-            'bateau' => 'required|numeric|exists:PLO_BATEAUX,BAT_id',
+            'bateau' => ['required','numeric','exists:PLO_BATEAUX,BAT_id',
+            function($attribute, $value, $fail){
+                $bateau = Bateau::find($value);
+
+                if($bateau && $bateau->BAT_max_personnes < $request->input('max_plongeurs')){
+                    $fail('La capacité du bateau est insuffisante pour le nombre maximum de plongeurs spécifié.');
+                }
+            }
+        ],
             'date' => 'required|date_format:Y-m-d',
             'moment' => 'required|numeric|exists:PLO_MOMENTS,MOM_id',
             'min_plongeurs' => 'required|numeric|min:2',
@@ -138,7 +146,17 @@ class PlongeesController extends Controller
                 }
             ],
         ], ['pilote.valid'=>"Le pilote doit être autorisé.",
-            'securite_de_surface.valid' => 'La sécurité de surface doit être autorisée.']);
+            'securite_de_surface.valid' => 'La sécurité de surface doit être autorisée.',
+            'directeur_de_plongee' => 'Le directeur de plongée doit être de niveau suffisant (E4).',
+            'differents' => 'Le pilote, la securité de surface et le directeur de plongee doivent être 3 personnes différentes'
+        ])->sometimes('pilote', 'differents', function($input){
+            return $input->pilote
+                && $input->securite_de_surface
+                && $input->directeur_de_plongee
+                && $input->pilote !== $input->securite_de_surface
+                && $input->pilote !== $input->directeur_de_plongee
+                && $input->securite_de_surface !== $input->directeur_de_plongee; 
+        });
         $dive = new Plongee();
         $dive->PLO_lieu = $data['lieu'];
         $dive->PLO_bateau = $data['bateau'];
@@ -305,7 +323,7 @@ class PlongeesController extends Controller
                         $fail('La capacité du bateau est insuffisante pour le nombre maximum de plongeurs spécifié.');
                     }
                 }
-        ],
+            ],
             'date' => 'nullable|date_format:Y-m-d',
             'moment' => 'nullable|numeric|exists:PLO_MOMENTS,MOM_id',
             'min_plongeurs' => 'nullable|numeric|min:2',
@@ -326,7 +344,17 @@ class PlongeesController extends Controller
             ],
             'etat' => 'nullable|numeric|exists:PLO_ETATS,ETA_id',
         ], ['pilote.valid'=>"Le pilote doit être autorisé.",
-            'securite_de_surface.valid' => 'La sécurité de surface doit être autorisée.']);
+            'securite_de_surface.valid' => 'La sécurité de surface doit être autorisée.',
+            'directeur_de_plongee.valid' => 'Le directeur de plongée doit être de niveau suffisant (E4)',
+            'differents' => 'Le pilote, la securite de surface et le directeur de plongee doivent être 3 personnes differentes'
+        ])->sometimes('pilote', 'differents', function($input){
+            return $input->pilote
+                && $input->securite_de_surface
+                && $input->directeur_de_plongee
+                && $input->pilote !== $input->securite_de_surface
+                && $input->pilote !== $input->directeur_de_plongee
+                && $input->securite_de_surface !== $input->directeur_de_plongee;
+        });
     }  
 
     /**
