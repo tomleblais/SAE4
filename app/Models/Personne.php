@@ -130,6 +130,10 @@ class Personne extends Model implements Authenticatable
             $this->autorisations->AUT_directeur_section;
     }
 
+    public function isLastDirector(): bool {
+        return Autorisations::where('AUT_directeur_section', 1)->count() === 1 && $this->isDirector();
+    }
+
     public function isSecretary(): bool {
         return $this->autorisations()->exists() &&
             $this->autorisations->AUT_secretaire;

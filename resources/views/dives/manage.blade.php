@@ -8,7 +8,6 @@
     /** @var bool $actives */
 
     if ($displayMonth == 'cur') $displayMonth = now()->month;
-
     session()->put([
             'actives' => $actives?'true':'false',
             'mois' => $displayMonth,
@@ -42,7 +41,6 @@
                 { return $v->participants->count(); }, SORT_NATURAL, $sortDir); break;
         case 'etat' : $dives = $dives->sortBy('PLO_etat', SORT_NATURAL, $sortDir);
     }
-
     $names=['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre'
             , 'décembre'];
     $usedMonths = DB::select("SELECT distinct month(PLO_date) as month
@@ -103,20 +101,22 @@
         <tbody>
         @foreach($dives as $dive)
             @php
-            $color="";
-            if ($dive->isCancelled()) {
-                $color = 'w3-blue-gray';
-            } elseif ($dive->isLocked()) {
-                $color = 'w3-purple';
-            } else {
-                $nbFree = $dive->nbFreeSlots();
-                if ($nbFree <= 0)
-                    $color = 'w3-red';
-                elseif ($nbFree<=5)
-                    $color = 'w3-yellow';
-                else
-                    $color = 'w3-green';
-            }
+                $dive->isPast();
+
+                $color="";
+                if ($dive->isCancelled()) {
+                    $color = 'w3-blue-gray';
+                } elseif ($dive->isLocked()) {
+                    $color = 'w3-purple';
+                } else {
+                    $nbFree = $dive->nbFreeSlots();
+                    if ($nbFree <= 0)
+                        $color = 'w3-red';
+                    elseif ($nbFree<=5)
+                        $color = 'w3-yellow';
+                    else
+                        $color = 'w3-green';
+                }
             @endphp
             <tr class="{{$color}}">
                 <td><a href="/plongees/{{$dive->PLO_id}}/editer">

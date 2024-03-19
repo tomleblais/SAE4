@@ -29,7 +29,7 @@ class Etat extends Model
         if (isEmpty(Etat::$states))
             foreach (Etat::all() as $state)
                 Etat::$states[] = $state;
-        return Etat::$states[$id];
+        return Etat::$states[$id - 1];
     }
 
     /**

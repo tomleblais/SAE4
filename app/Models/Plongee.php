@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+
 /** Stores a given dive.
  * @property int $PLO_id
  * @property int $PLO_lieu
@@ -51,6 +52,16 @@ class Plongee extends Model
      * @var string
      */
     protected $table = 'PLO_PLONGEES';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'PLO_active',
+    ];
+
 
     /**
      * The primary key associated with the table.
@@ -191,6 +202,23 @@ class Plongee extends Model
     public function isLocked() : bool {
         return $this->PLO_etat > Etat::$PARAMETERIZED;
     }
+
+    public function isPast(): bool {
+        $diveDate = \DateTime::createFromFormat('Y-m-d', $this->PLO_date->format('Y-m-d'));
+        $currentDate = new \DateTime();
+
+        if ($diveDate < $currentDate) {
+            $difference = $currentDate->diff($diveDate);
+
+            if ($difference->y >= 1) {
+                $this->update(['PLO_active' => false]);
+            }
+            return true;
+        }
+        return false;
+    }
+
+
 
     public function nbFreeSlots() : int {
         return $this->PLO_max_plongeurs - $this->participants()->count();
