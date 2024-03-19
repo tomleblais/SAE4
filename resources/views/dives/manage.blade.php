@@ -3,7 +3,7 @@
     use App\Models\Personne;use App\Models\Plongee;use Illuminate\Database\Eloquent\Collection;use Illuminate\Support\Facades\DB;
 
     /** @var string $displayMonth */
-    if (string $displayMonth == 'cur') $displayMonth = now()->month;
+    if ($displayMonth == 'cur') $displayMonth = now()->month;
 
     /** @var string $sortOrder */
     /** @var bool $sortDir */
