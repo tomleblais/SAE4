@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Adherent;
+use App\Models\Bateau;
 use App\Models\Inclut;
 use App\Models\Participe;
 use App\Models\Plongee;
@@ -197,6 +198,20 @@ class PlongeesController extends Controller
     public function updateWithId(Request $request, Plongee $plongee)
     {
         $id = $plongee->PLO_id; // get id from the route
+        $adherents = Plongee::where("PLO_id", $request->input("id"))
+               ->join("PLO_participe", "PLO_plongees.PLO_id", "=", "PLO_participe.PAR_id")
+               ->join("PLO_adherents", "PLO_participe.PAR_adherent", "=", "PLO_adherents.ADH_id")
+               ->where("ADH_niveau", "<", $request->input("niveau"))
+               ->count();
+
+        if ($adherents) {
+            throw new Exception("Au moins un participant à un niveau trop bas pour monter le niveau.");
+        }
+
+        $bateau = Bateau::where("BAT_id", $request->input("bateau"))->first("BAT_max_personnes");
+        if ((int) $request->input("max_plongeurs") > $bateau->BAT_max_personnes) {
+            throw new Exception("Il n'y a pas assez de place sur le bateau.");
+        }
         $request->merge(["id"=>$id]); // in case it's not present in the body
         $data = $this->validateRequest($request);
         return $this->doUpdate($data, $plongee, $request);
