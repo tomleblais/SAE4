@@ -43,6 +43,14 @@ class Autorisations extends Model
      */
     public $timestamps = false;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['AUT_directeur_section', 'AUT_securite_surface', 'AUT_pilote', 'AUT_secretaire'];
+
+
     public function toArray(): array
     {
         return [

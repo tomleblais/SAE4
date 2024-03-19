@@ -76,7 +76,11 @@ class Personne extends Model implements Authenticatable
      * @var array
      */
     protected $casts = [
-        'PER_active' => 'boolean'
+        'PER_active' => 'boolean',
+        'AUT_directeur_section' => 'boolean',
+        'AUT_securite_surface' => 'boolean',
+        'AUT_pilote' => 'boolean',
+        'AUT_secretaire' => 'boolean',
     ];
 
     // Relationships

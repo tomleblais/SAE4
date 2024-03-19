@@ -169,4 +169,5 @@ class ApiParticipantsTest extends TestCase
             DB::rollBack();
         }
     }
+
 }
