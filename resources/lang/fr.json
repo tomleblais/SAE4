@@ -1,0 +1,4 @@
+{
+    "The :attribute must contain at least one symbol." : "Le champ :attribute doit contenir au moins un symbole.",
+    "Le champ pass est obligatoire quand forgotten n'est pas présent." : "Le mot de passe est obligatoire pour se connecter."
+}

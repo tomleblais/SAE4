@@ -1,0 +1,1510 @@
+openapi: 3.0.3
+info:
+  title: DivingRegistrationAPI
+  description: API to DivingRegistration application
+  version: 1.0.0
+servers:
+  - url: 'https://dev-restandroid.users.info.unicaen.fr/api'
+  - url: 'http://127.0.0.1:8000/api'
+paths:
+  /adherents:
+    get:
+      description: get all active divers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Adherent'
+    post:
+      description: insert a new active diver
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdherentWithConfirmedPassNoId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Adherent'
+        '422':
+          description: texts are too long or (nom,prenom) is not unique, or email is not unique, or pass is not strong enough, or not confirmed, or aptitude level is incorrect
+    put:
+      description: update a diver
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/AdherentWithConfirmedPass'
+                - properties:
+                    old_pass:
+                      type: string
+                      format: password
+                      minLength: 8
+                      example: 'MotDePasse-Pas-Securis3'
+              required:
+                - old_pass
+                - id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Adherent'
+        '404':
+          description: not found
+        '422':
+          description: texts are too long or (nom,prenom) is not unique, or email is not unique, or pass is not strong enough, or not confirmed, or old_pass does not match current password, or aptitude level is incorrect
+  /adherents/details:
+    get:
+      description: get all inactive divers with all details
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdherentDetails'
+  /adherents/inactifs:
+    get:
+      description: get all inactive divers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Adherent'
+  /adherents/{id}:
+    get:
+      description: get a specific diver
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Adherent'
+        '404':
+          description: not found
+    put:
+      description: update a diver
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/AdherentWithConfirmedPassNoId'
+                - properties:
+                    old_pass:
+                      type: string
+                      format: password
+                      minLength: 8
+                      example: 'Mot-De-Pass3_securise'
+              required:
+                - old_pass
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Adherent'
+        '404':
+          description: not found
+        '422':
+          description: texts are too long or (nom,prenom) is not unique, or email is not unique, or pass is not strong enough, or not confirmed, or old_pass does not match current password, or aptitude level is incorrect
+    delete:
+      description: delete a diver
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Adherent'
+            application/x-empty:
+              schema:
+                type: string
+                description: 'no content if person is removed'
+                example: ''
+        '404':
+          description: not found
+  /adherents/{id}/details:
+    get:
+      description: get a specific diver
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdherentDetails'
+        '404':
+          description: not found
+
+  /bateaux:
+    get:
+      description: get all active boats
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bateau'
+    post:
+      description: insert a new active boat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BateauNoId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bateau'
+        '422':
+          description: max_personnes is less than 2 or libelle is not unique
+    put:
+      description: update a boat
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Bateau'
+              required:
+                - id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bateau'
+        '404':
+          description: not found
+        '422':
+          description: max_personnes is less than 2 or libelle is not unique
+
+  /bateaux/inactifs:
+    get:
+      description: get all inactive boats
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bateau'
+  /bateaux/{id}:
+    get:
+      description: get a specific boats
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bateau'
+        '404':
+          description: not found
+    put:
+      description: update a boat
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BateauNoId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bateau'
+        '404':
+          description: not found
+        '422':
+          description: max_personnes is less than 2 or libelle is not unique
+    delete:
+      description: delete a boat or mark it inactive if still used
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bateau'
+            application/x-empty:
+              schema:
+                type: string
+                description: 'no content if boat is removed'
+                example: ''
+        '404':
+          description: not found
+
+  /lieux:
+    get:
+      description: get all active sites
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lieu'
+    post:
+      description: insert a new active site for diving
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LieuNoId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lieu'
+        '422':
+          description: texts are too long or libelle is not unique
+    put:
+      description: update a site for diving
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Lieu'
+              required:
+                - id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lieu'
+        '404':
+          description: not found
+
+  /lieux/inactifs:
+    get:
+      description: get all inactive sites for diving
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lieu'
+  /lieux/{id}:
+    get:
+      description: get a specific site for diving
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lieu'
+        '404':
+          description: not found
+    put:
+      description: update a site for diving
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LieuNoId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lieu'
+        '404':
+          description: not found
+        '422':
+          description: texts are too long or libelle is not unique
+    delete:
+      description: delete a site or mark it inactive if still used
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lieu'
+            application/x-empty:
+              schema:
+                type: string
+                description: 'no content if site is removed'
+                example: ''
+        '404':
+          description: not found
+
+  /moments:
+    get:
+      description: get all dive periods in the day
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Moment'
+  /moments/{id}:
+    get:
+      description: get a specific dive period in the day
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Moment'
+        '404':
+          description: not found
+
+  /niveaux:
+    get:
+      description: get all diving aptitudes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Niveau'
+  /niveaux/{id}:
+    get:
+      description: get a specific diving aptitude
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Niveau'
+        '404':
+          description: not found
+  /niveaux/{id}/adherents:
+    get:
+      description: get a specific diving aptitude's divers
+      parameters:
+        - name: id
+          in: path
+          description: ID of the aptitude for which divers are requested
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Adherent'
+        '404':
+          description: not found
+
+  /palanquees/membres/{id}:
+    parameters:
+      - $ref: '#/components/parameters/PathId'
+    get:
+      description: get a specific palnaque diver
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inclut'
+        '404':
+          description: not found
+    delete:
+      description: delete a palnaque diver
+      responses:
+        '200':
+          description: OK
+          content:
+            application/x-empty:
+              schema:
+                type: string
+                description: 'no content'
+                example: ''
+        '404':
+          description: not found
+    put:
+      description: update the panlaque of a diver
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                palanquee:
+                  type: integer
+                  description: the ID of the palanquee to joi
+                  example: 3
+              required:
+                - palanquee
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inclut'
+        '404':
+          description: not found
+        '422':
+          description: the palnaque does not exist, or is not from the same dive
+  /palanquees/membres/{id}/details:
+    parameters:
+      - $ref: '#/components/parameters/PathId'
+    get:
+      description: get a specific palnaque diver with details
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InclutDetail'
+
+  /palanquees:
+    get:
+      description: get all palnaques
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Palanquee'
+  /palanquees/{id}:
+    parameters:
+      - $ref: '#/components/parameters/PathId'
+    get:
+      description: get a specific palnacle
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Palanquee'
+        '404':
+          description: not found
+    delete:
+      description: delete a specific palnacle
+      responses:
+        '200':
+          description: OK
+          content:
+            application/x-empty:
+              schema:
+                type: string
+                description: 'no content'
+                example: ''
+        '404':
+          description: not found
+    put:
+      description: update a palnacle
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PalanqueeNoId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Palanquee'
+        '404':
+          description: not found
+        '422':
+          description: texts are too long or libelle is not unique
+  /palanquees/details:
+    get:
+      description: get all palnacles with details
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalanqueeDetail'
+  /palanquees/{id}/details:
+    get:
+      description: get a specific palnacle with details
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PalanqueeDetail'
+        '404':
+          description: not found
+  /palanquees/{id}/membres:
+    parameters:
+      - $ref: '#/components/parameters/PathId'
+    get:
+      description: get a specific palnacle's members
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inclut'
+        '404':
+          description: not found
+    post:
+      description: insert a diver in the specified palnacle
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                adherent:
+                  type: integer
+                  description: the ID of the diver
+                  example: 16
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inclut'
+        '404':
+          description: not found
+        '422':
+          description: the diver is not registered in this dive, or is already in another palnacle, or has a too low aptitude level
+  /palanquees/{id}/membres/details:
+    parameters:
+      - $ref: '#/components/parameters/PathId'
+    get:
+      description: get a specific palnacle's members with details
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InclutDetail'
+        '404':
+          description: not found
+
+
+  /participants:
+    get:
+      description: get all participants
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participant'
+    post:
+      description: insert a new participant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipantNoId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participant'
+        '422':
+          description: dive or participant don't exist or two participations of the same diver to the same dive or aptitude level is not enough
+  /participants/{id}:
+    get:
+      description: get a specific participant
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participant'
+        '404':
+          description: not found
+    delete:
+      description: delete a participant
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/x-empty:
+              schema:
+                type: string
+                description: 'no content'
+                example: ''
+        '404':
+          description: not found
+  /participants/details:
+    get:
+      description: get all participants with details
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipantDetail'
+  /participants/{id}/details:
+    get:
+      description: get a specific participant with details
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipantDetail'
+        '404':
+          description: not found
+
+  /personnes:
+    get:
+      description: get all active persons
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Personne'
+    post:
+      description: insert a new active person
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonneWithConfirmedPassNoId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Personne'
+        '422':
+          description: texts are too long or (nom,prenom) is not unique, or email is not unique, or pass is not strong enough, or not confirmed
+    put:
+      description: update a person
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/PersonneWithConfirmedPass'
+                - properties:
+                    old_pass:
+                      type: string
+                      format: password
+                      minLength: 8
+                      example: 'Dtunpo'
+              required:
+                - old_pass
+                - id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Personne'
+        '404':
+          description: not found
+        '422':
+          description: texts are too long or (nom,prenom) is not unique, or email is not unique, or pass is not strong enough, or not confirmed, or old_pass does not match current password
+
+  /personnes/inactifs:
+    get:
+      description: get all inactive persons
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Personne'
+  /personnes/{id}:
+    get:
+      description: get a specific person
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Personne'
+        '404':
+          description: not found
+    put:
+      description: update a person
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/PersonneWithConfirmedPassNoId'
+                - properties:
+                    old_pass:
+                      type: string
+                      format: password
+                      minLength: 8
+                      example: 'Dtunpo'
+              required:
+                - old_pass
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Personne'
+        '404':
+          description: not found
+        '422':
+          description: texts are too long or (nom,prenom) is not unique, or email is not unique, or pass is not strong enough, or not confirmed, or old_pass does not match current password
+    delete:
+      description: delete a person
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Personne'
+            application/x-empty:
+              schema:
+                type: string
+                description: 'no content if person is removed'
+                example: ''
+        '404':
+          description: not found
+
+  /plongees:
+    get:
+      description: get all active dives
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plongee'
+    post:
+      description: insert a new active dive
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlongeeNoId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plongee'
+        '422':
+          description: site, boat, moment, aptitude level, pilot, surface security or director don't exist, date not formatted as Y-m_d, less than 2 divers allowed, max divers less than min, pilot, security or director are not allowed
+    put:
+      description: update a dive
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlongeeNoId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plongee'
+        '404':
+          description: not found
+        '422':
+          description: site, boat, moment, aptitude level, pilot, surface security or director don't exist, date not formatted as Y-m_d, less than 2 divers allowed, max divers less than min, pilot, security or director are not allowed
+  /plongees/details:
+    get:
+      description: get all active dives with all details
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlongeeDetails'
+  /plongees/inactifs:
+    get:
+      description: get all inactive dives
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plongee'
+  /plongees/{id}:
+    get:
+      description: get a specific dive
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plongee'
+        '404':
+          description: not found
+    put:
+      description: update a dive
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlongeeNoId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plongee'
+        '404':
+          description: not found
+        '422':
+          description: site, boat, moment, aptitude level, pilot, surface security or director don't exist, date not formatted as Y-m_d, less than 2 divers allowed, max divers less than min, pilot, security or director are not allowed
+    delete:
+      description: delete a dive
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plongee'
+            application/x-empty:
+              schema:
+                type: string
+                description: 'no content if dive is removed'
+                example: ''
+        '404':
+          description: not found
+  /plongees/{id}/details:
+    get:
+      description: get a specific dive with details
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlongeeDetails'
+        '404':
+          description: not found
+
+components:
+  parameters:
+    PathId:
+      name: id
+      in: path
+      description: ID of the requested element
+      required: true
+      schema:
+        type: integer
+
+  schemas:
+    Actif:
+      type: object
+      properties:
+        actif:
+          type: boolean
+          description: true iff it can be chosen for new dives
+          example: true
+
+    Adherent:
+      allOf:
+        - $ref: '#/components/schemas/Personne'
+        - $ref: '#/components/schemas/AdherentBase'
+        - $ref: '#/components/schemas/Actif'
+    AdherentBase:
+      type: object
+      description: A diver registered in the association
+      properties:
+        license:
+          type: string
+          description: the diver's license
+          example: '9242391985562582'
+        date_certificat_medical:
+          type: string
+          format: date
+          example: '2023-05-31'
+        forfait:
+          type: string
+          description: the diver's remaining dives
+          example: '75'
+        niveau:
+          type: integer
+          description: the aptitude ID of the diver
+          example: 9
+    AdherentDetails:
+      allOf:
+        - $ref: '#/components/schemas/Adherent'
+        - properties:
+            niveau_libelle:
+              type: string
+              description: the aptitude full name
+              example: "Plongeur Autonome 20m"
+            niveau_code:
+              type: string
+              description: the aptitude short name
+              example: "PA-20"
+            profondeur_si_encadre:
+              type: integer
+              description: the depth a diver with this aptitude can dive to when framed by an E* level diver
+              example: 40
+            profondeur_si_autonome:
+              type: integer
+              description: the depth a diver with this aptitude can dive to when not framed by an E* level diver
+              example: 20
+    AdherentNoId:
+      allOf:
+        - $ref: '#/components/schemas/AdherentBase'
+    AdherentWithConfirmedPassNoId:
+      allOf:
+        - $ref: '#/components/schemas/AdherentBase'
+        - $ref: '#/components/schemas/PersonneWithConfirmedPassNoId'
+    AdherentWithConfirmedPass:
+      allOf:
+        - $ref: '#/components/schemas/AdherentWithConfirmedPassNoId'
+        - $ref: '#/components/schemas/Id'
+
+    BateauBase:
+      type: object
+      description: A boat to transport divers
+      properties:
+        libelle:
+          type: string
+          description: the boat's unique name
+          example: 'La Licorne'
+          maxLength: 45
+        max_personnes:
+          type: integer
+          description: the number of people that can be transported
+          example: 25
+          minimum: 2
+    Bateau:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/BateauBase'
+        - $ref: '#/components/schemas/Actif'
+    BateauNoId:
+      allOf:
+        - $ref: '#/components/schemas/BateauBase'
+        - type: object
+          required:
+            - libelle
+            - max_personne
+
+    Id:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: its unique ID
+          example: 3
+
+    InclutBase:
+      type: object
+      description: A registration of a diver in a palnaque
+      properties:
+        adherent:
+          type: integer
+          description: the ID of the diver
+          example: 16
+        palanquee:
+          type: integer
+          description: the ID of the palnacle
+          example: 3
+    Inclut:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/InclutBase'
+    InclutNoId:
+      allOf:
+        - $ref: '#/components/schemas/InclutBase'
+    InclutDetail:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/InclutBase'
+        - type: object
+          properties:
+            adherent_nom:
+              type: string
+              description: the diver's last name
+              example: 'Ferreira'
+            adherent_prenom:
+              type: string
+              description: the diver's first name
+              example: 'Clémence'
+            adherent_niveau:
+              type: string
+              description: the diver's aptitude level short name
+              example: 'PE-6'
+
+    LieuBase:
+      type: object
+      description: A site to dive
+      properties:
+        libelle:
+          type: string
+          description: the site's unique name
+          example: 'Baz Lucs'
+          maxLength: 45
+        description:
+          type: string
+          description: the site's long description
+          example: 'Plateau rocheux 0-100m'
+          maxLength: 100
+    Lieu:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/LieuBase'
+        - $ref: '#/components/schemas/Actif'
+    LieuNoId:
+      allOf:
+        - $ref: '#/components/schemas/LieuBase'
+        - type: object
+          required:
+            - libelle
+            - description
+
+    Moment:
+      type: object
+      description: A dive period in the day
+      properties:
+        id:
+          type: integer
+          description: the period unique ID
+          example: 1
+        libelle:
+          type: string
+          description: the period's name
+          example: 'Matin'
+
+    Niveau:
+      type: object
+      description: a diving aptitude
+      properties:
+        id:
+          type: integer
+          description: the aptitude unique ID
+          example: 8
+        libelle:
+          type: string
+          description: the aptitude full name
+          example: "Plongeur Autonome 20m"
+        code:
+          type: string
+          description: the aptitude short name
+          example: "PA-20"
+        profondeur_si_encadre:
+          type: integer
+          description: the depth a diver with this aptitude can dive to when framed by an E* level diver
+          example: 40
+        profondeur_si_autonome:
+          type: integer
+          description: the depth a diver with this aptitude can dive to when not framed by an E* level diver
+          example: 20
+        niveau:
+          type: integer
+          description: a two-digit number giving the level and sub-level of this aptitude
+          example: 20
+        guide_de_palanquee:
+          type: boolean
+          description: indicates if a diver with this aptitude can be a diving guide
+          example: false
+        directeur_de_plongee:
+          type: boolean
+          description: indicates if a diver with this aptitude can be a diving director
+          example: false
+
+    PalanqueeBase:
+      type: object
+      description: A palnacle in a dive
+      properties:
+        plongee:
+          type: integer
+          description: the ID of the dive
+          example: 3
+        max_profondeur:
+          type: integer
+          description: the maximal depth this dive can descend to
+          example: 5
+        max_duree:
+          type: integer
+          description: the maximal duration this dive can last
+          example: 42
+        heure_immersion:
+          type: string
+          format: date-time
+          description: the time this dive started
+          example: '21:43'
+          nullable: true
+        heure_sortie:
+          type: string
+          format: date-time
+          description: the time this dive ended
+          example: '22:10'
+          nullable: true
+        profondeur_realisee:
+          type: integer
+          description: the maximal depth achieved by this palnacle during the dive. Must be lower than the dive's limit
+          example: 32
+          nullable: true
+        duree_realisee:
+          type: integer
+          description: the maximal duration achieved by this palnacle during the dive. Must be lower than the dive's limit
+          example: 27
+          nullable: true
+    Palanquee:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/PalanqueeBase'
+    PalanqueeNoId:
+      allOf:
+        - $ref: '#/components/schemas/PalanqueeBase'
+    PalanqueeDetail:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/PalanqueeBase'
+        - type: object
+          properties:
+            plongee_niveau:
+              type: string
+              description: the dive's required aptitude level's short name
+              example: 'PE-6'
+            plongee_etat:
+              type: string
+              description: the dive's state
+              example: 'Paramétrée'
+
+    ParticipantBase:
+      type: object
+      description: A registration of a diver in a dive
+      properties:
+        adherent:
+          type: integer
+          description: the ID of the diver
+          example: 16
+        plongee:
+          type: integer
+          description: the ID of the dive
+          example: 3
+    Participant:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/ParticipantBase'
+    ParticipantNoId:
+      allOf:
+        - $ref: '#/components/schemas/ParticipantBase'
+    ParticipantDetail:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/ParticipantBase'
+        - type: object
+          properties:
+            adherent_nom:
+              type: string
+              description: the diver's last name
+              example: 'Ferreira'
+            adherent_prenom:
+              type: string
+              description: the diver's first name
+              example: 'Clémence'
+            adherent_niveau:
+              type: string
+              description: the diver's aptitude level short name
+              example: 'PE-6'
+            plongee_date:
+              type: string
+              format: date
+              description: the dive's date
+              example: '2023-04-10'
+            plongee_moment:
+              type: string
+              description: the part of the day when the dive will happen
+              example: 'Après-midi'
+            plongee_niveau:
+              type: string
+              description: the dive's required aptitude level short name
+              example: 'PE-6'
+
+    PersonneBase:
+      type: object
+      description: A person registered to the application
+      properties:
+        nom:
+          type: string
+          description: the person's last name
+          example: 'Dupont'
+          maxLength: 45
+        prenom:
+          type: string
+          description: the person's first name
+          example: 'Dupond'
+          maxLength: 45
+        email:
+          type: string
+          format: email
+          description: the person's mail address
+          example: 'dupondt@iut.fr'
+          maxLength: 100
+    PersonneRights:
+      type: object
+      properties:
+        directeur_de_section:
+          type: boolean
+          description: true iff the person is the technical director
+          example: false
+        secretaire:
+          type: boolean
+          description: true iff the person is the secretary
+          example: false
+        securite_de_surface:
+          type: boolean
+          description: true iff the person can be surface security
+          example: false
+        pilote:
+          type: boolean
+          description: true iff the person can be pilot
+          example: false
+    Personne:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/PersonneBase'
+        - $ref: '#/components/schemas/Actif'
+    PersonneNoId:
+      allOf:
+        - $ref: '#/components/schemas/PersonneBase'
+    PersonneWithConfirmedPassNoId:
+      allOf:
+        - $ref: '#/components/schemas/PersonneBase'
+        - $ref: '#/components/schemas/PersonneRights'
+        - type: object
+          properties:
+            pass:
+              type: string
+              format: password
+              description: the person's password
+              example: 'Dtunpo-2024'
+              maxLength: 60
+              minLength: 8
+            pass_confirmation:
+              type: string
+              format: password
+              description: the person's password
+              example: 'Dtunpo-2024'
+              maxLength: 60
+              minLength: 8
+    PersonneWithConfirmedPass:
+      allOf:
+        - $ref: '#/components/schemas/PersonneWithConfirmedPassNoId'
+        - $ref: '#/components/schemas/Id'
+
+    PlongeeBase:
+      type: object
+      description: A dive
+      properties:
+        lieu:
+          type: integer
+          description: the ID of the site to dive at
+          example: 3
+        bateau:
+          type: integer
+          description: the ID of the boad to transport divers
+          example: 1
+        date:
+          type: string
+          format: date
+          description: the date the dive will happen
+          example: '2024-10-20'
+        moment:
+          type: integer
+          description: the ID of the moment the dive will happen
+          example: 1
+        min_plongeurs:
+          type: integer
+          description: the minimum number of divers needed
+          example: 4
+          minimum: 2
+        max_plongeurs:
+          type: integer
+          description: the maximum number of divers allowed. Must me greater than minimum.
+          example: 4
+        niveau:
+          type: integer
+          description: the ID of the minimum aptitude level needed for divers
+          example: 10
+        etat:
+          type: integer
+          description: the ID of the state of the dive (1 created, 2 parametrized, 3 validated, 4 done, 5 cancelled)
+        securite_de_surface:
+          type: integer
+          description: the ID of the surface security (person)
+          example: 3
+        pilote:
+          type: integer
+          description: the ID of the pilot (person)
+          example: 4
+        directeur_de_plongee:
+          type: integer
+          description: the ID of the dive director (person)
+          example: 27
+    Plongee:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/PlongeeBase'
+        - $ref: '#/components/schemas/Actif'
+    PlongeeNoId:
+      allOf:
+        - $ref: '#/components/schemas/PlongeeBase'
+    PlongeeDetails:
+      allOf:
+        - $ref: '#/components/schemas/Plongee'
+        - properties:
+            moment_libelle:
+              type: string
+              description: the full text of the moment
+              example: 'matin'
+            bateau_libelle:
+              type: string
+              description: the full name of the boat
+              example: 'Esperenza'
+            bateau_max_personnes:
+              type: integer
+              description: the maximum number of persons allowed on this boat
+            lieu_libelle:
+              type: string
+              description: the name of the site for diving
+              example: 'Baz Lucs'
+            lieu_description:
+              type: string
+              description: the descripton of the site for diving
+              example: 'Plateau rocheu 0-30m'
+            niveau_code:
+              type: string
+              description: the short name of the aptitude level requested for divers
+              example: 'PE-40'
+            niveau_libelle:
+              type: string
+              description: the full name of the aptitude level requested for divers
+              example: 'Plongeur Ecadré, 40m'
+            niveau_profondeur_autonome:
+              type: integer
+              description: the maximal depth this aptitude level allows when not framed by an instructor
+              example: 20
+            niveau_profondeur_encadre:
+              type: integer
+              description: the maximal depth this aptitude level allows when framed by an instructor
+              example: 40
+            pilote_nom:
+              type: string
+              description: the pilot's last name
+              example: 'Fisher'
+            pilote_prenom:
+              type: string
+              description: the pilot's first name
+              example: 'Gilbert'
+            securite_nom:
+              type: string
+              description: the surface security's last name
+              example: 'Remy'
+            securite_prenom:
+              type: string
+              description: the surface security's first name
+              example: 'Michelle'

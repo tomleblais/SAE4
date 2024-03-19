@@ -1,0 +1,851 @@
+{
+    "info": {
+        "name": "RESTer",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "SAE3_2023",
+            "item": [
+                {
+                    "name": "Adherents",
+                    "item": [
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/adherents/1",
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-50",
+                            "name": "Delete"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/adherents",
+                                "method": "GET",
+                                "header": []
+                            },
+                            "id": "rester-46",
+                            "name": "GetAll"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/niveaux/4/adherents",
+                                "method": "GET",
+                                "header": []
+                            },
+                            "id": "rester-51",
+                            "name": "GetAllOfNiveau"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/adherents",
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"nom\":\"Jeanpierre\", \"prenom\":\"Laurent\", \"licence\":\"1234567890\", \"date_certificat_medical\":\"08/12/2020\", \"pass\":\"abCD-123\", \"pass_confirmation\":\"abCD-123\", \"email\":\"laurent.jeanpierre@unicaen.fr\", \"forfait\":\"illimité\", \"niveau\":1}"
+                                }
+                            },
+                            "id": "rester-47",
+                            "name": "PostComplet"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/adherents",
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"nom\":\"Jeanpierre\", \"prenom\":\"Laurent\", \"licence\":\"1234567890\", \"date_certificat_medical\":\"08/12/2020\", \"pass\":\"abCD-123\", \"pass_confirmation\":\"abCD-123\", \"email\":\"laurent.jeanpierre@unicaen.fr\", \"forfait\":\"illimité\", \"niveau\":1}"
+                                }
+                            },
+                            "id": "rester-48",
+                            "name": "PutComplet"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/adherents/1",
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"licence\":\"09876543210\"}"
+                                }
+                            },
+                            "id": "rester-49",
+                            "name": "PutPartiel"
+                        }
+                    ]
+                },
+                {
+                    "name": "Bateaux",
+                    "item": [
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/bateaux",
+                                "method": "GET",
+                                "header": []
+                            },
+                            "id": "rester-41",
+                            "name": "GetAll"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/bateaux/inactifs",
+                                "method": "GET",
+                                "header": []
+                            },
+                            "id": "rester-65",
+                            "name": "GetAllInactives"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/bateaux",
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"libelle\":\"test\", \"max_personnes\":3}"
+                                }
+                            },
+                            "id": "rester-42",
+                            "name": "Post"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/bateaux",
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"id\":7, \"libelle\":\"retest\", \"max_personnes\":35}"
+                                }
+                            },
+                            "id": "rester-43",
+                            "name": "Put"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/bateaux",
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"id\":7, \"libelle\":\"test again\"}"
+                                }
+                            },
+                            "id": "rester-44",
+                            "name": "PutPartiel"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/bateaux/2",
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"libelle\":\"The Forgotten\", \"max_personnes\":3}"
+                                }
+                            },
+                            "id": "rester-45",
+                            "name": "PutWithId"
+                        }
+                    ]
+                },
+                {
+                    "name": "Lieux",
+                    "item": [
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/lieux/5",
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"libelle\" : \"trou perdu corps et âme\", \"description\":\"vraiment paumé\"}"
+                                }
+                            },
+                            "id": "rester-72",
+                            "name": "Delete"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/lieux",
+                                "method": "GET",
+                                "header": []
+                            },
+                            "id": "rester-67",
+                            "name": "GetAll"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/lieux/inactifs",
+                                "method": "GET",
+                                "header": []
+                            },
+                            "id": "rester-66",
+                            "name": "GetAllInactives"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/lieux/1",
+                                "method": "GET",
+                                "header": []
+                            },
+                            "id": "rester-68",
+                            "name": "GetOne"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/lieux",
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"libelle\" : \"trou\", \"description\":\"vraiment paumé\"}"
+                                }
+                            },
+                            "id": "rester-69",
+                            "name": "Post"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/lieux",
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"id\":5, \"libelle\" : \"trou perdu\", \"description\":\"vraiment paumé\"}"
+                                }
+                            },
+                            "id": "rester-70",
+                            "name": "Put"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/lieux/5",
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"libelle\" : \"trou perdu corps et âme\", \"description\":\"vraiment paumé\"}"
+                                }
+                            },
+                            "id": "rester-71",
+                            "name": "Put2"
+                        }
+                    ]
+                },
+                {
+                    "name": "Palanquees",
+                    "item": [
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/palanquees",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-81",
+                            "name": "GetAll"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/palanquees/details",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-82",
+                            "name": "GetAllWithDetails"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/palanquees/1/membres",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-83",
+                            "name": "GetMembresOfPalanquee"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/palanquees/1/membres/details",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-86",
+                            "name": "GetMembresOfPalanqueeWithDetails"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/palanquees/1",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-84",
+                            "name": "GetOne"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/palanquees/1/details",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-85",
+                            "name": "GetOneWithDetails"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/palanquees/1/membres",
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n        \"adherent\": 3,\n        \"palanquee\": 1\n    }"
+                                }
+                            },
+                            "id": "rester-87",
+                            "name": "PostMembre"
+                        }
+                    ]
+                },
+                {
+                    "name": "PalanqueesMembre",
+                    "item": [
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/palanquees/membres/6",
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-88",
+                            "name": "Delete"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/palanquees/membres",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-90",
+                            "name": "GetAll"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/palanquees/membres/details",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-91",
+                            "name": "GetAllWithDetails"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/palanquees/membres/1",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-89",
+                            "name": "GetOne"
+                        }
+                    ]
+                },
+                {
+                    "name": "Participants",
+                    "item": [
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/participants/11",
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"id\": 3,\n    \"adherent\": 3,\n    \"role\": 4,\n    \"plongee\": 1\n}"
+                                }
+                            },
+                            "id": "rester-80",
+                            "name": "Delete"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/participants",
+                                "method": "GET",
+                                "header": []
+                            },
+                            "id": "rester-55",
+                            "name": "GetAll"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/participants/details",
+                                "method": "GET",
+                                "header": []
+                            },
+                            "id": "rester-53",
+                            "name": "GetAllWithDetails"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/participants/2",
+                                "method": "GET",
+                                "header": []
+                            },
+                            "id": "rester-56",
+                            "name": "GetOne"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/participants/2/details",
+                                "method": "GET",
+                                "header": []
+                            },
+                            "id": "rester-79",
+                            "name": "GetOneWithDetails"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/participants",
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"adherent\": 3,\n    \"role\": 1,\n    \"plongee\": 1\n}"
+                                }
+                            },
+                            "id": "rester-57",
+                            "name": "Post"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/participants",
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"id\": 3,\n    \"adherent\": 3,\n    \"role\": 4,\n    \"plongee\": 1\n}"
+                                }
+                            },
+                            "id": "rester-58",
+                            "name": "Put"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/participants/3",
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"adherent\": 3,\n    \"role\": 3,\n    \"plongee\": 1\n}"
+                                }
+                            },
+                            "id": "rester-60",
+                            "name": "Put2"
+                        }
+                    ]
+                },
+                {
+                    "name": "Plongees",
+                    "item": [
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/plongees/4",
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-63",
+                            "name": "Delete"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/plongees",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-52",
+                            "name": "GetAll"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/plongees/inactives",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-73",
+                            "name": "GetAllInactives"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/plongees/details",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-74",
+                            "name": "GetAllWithDetails"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/plongees/4",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-62",
+                            "name": "GetOne"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/plongees/1/details",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-75",
+                            "name": "GetOneWithDetails"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/plongees/1/palanquees",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-77",
+                            "name": "GetPalanquees"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/plongees/1/participants",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ]
+                            },
+                            "id": "rester-76",
+                            "name": "GetParticipants"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/plongees",
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"lieu\":1, \"bateau\":1, \"date\":\"2023-09-27\", \"moment\":3, \"min_plongeurs\":2, \"max_plongeurs\":7, \"niveau\":7}"
+                                }
+                            },
+                            "id": "rester-61",
+                            "name": "Post"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/plongees/1/palanquees",
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n        \"plongee\": 1,\n        \"max_profondeur\": 20,\n        \"max_duree\": 45\n    }"
+                                }
+                            },
+                            "id": "rester-78",
+                            "name": "PostPalanquee"
+                        },
+                        {
+                            "request": {
+                                "url": "http://localhost:8080/api/plongees",
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"lieu\":1, \"bateau\":1, \"date\":\"22/09/2023\", \"moment\":3, \"min_plongeurs\":2, \"max_plongeurs\":7, \"niveau\":7}"
+                                }
+                            },
+                            "id": "rester-54",
+                            "name": "Put"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

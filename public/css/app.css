@@ -1,0 +1,32 @@
+
+.vanish {
+    animation: 1s vanishing 1s forwards;
+}
+
+@keyframes vanishing {
+    from {opacity: 1}
+    to {opacity: 0}
+}
+
+.submitLink {
+    background-color: transparent;
+    text-decoration: underline;
+    border: none;
+    color: blue;
+    cursor: pointer;
+}
+.submitLink:focus {
+    outline: none;
+}
+table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: limegreen;
+}
+footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    background-color: whitesmoke;
+}
