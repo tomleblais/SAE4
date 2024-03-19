@@ -1,3 +1,6 @@
+@php
+    use App\Models\Niveau;
+@endphp
 <!-- The new-adherent form -->
 <x-form title="Créer un adhérent" heading="Nouvel adhérent" action="/api/adherents" button="Créer"
  ariane="Accueil-Adhérents-Nouveau">
