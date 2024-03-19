@@ -39,10 +39,7 @@
     }
     $names=['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre'
             , 'décembre'];
-    $usedMonths = DB::select("SELECT distinct month(PLO_date) as month
-             FROM PLO_PLONGEES JOIN PLO_NIVEAUX ON PLO_niveau=NIV_id
-             WHERE NIV_niveau <= :niv AND PLO_active = 1
-             ORDER BY month", ['niv'=>$user->niveau->NIV_niveau]);
+    $usedMonths = range(1, 12);
 @endphp
 <x-page ariane="Accueil-Inscriptions aux plongées">
     <h1 class="w3-center">Inscriptions aux plongées</h1>
@@ -53,8 +50,8 @@
         <label>Mois : <select name="mois" onchange="this.form.submit()">
                 <option value="tous" {{ ($displayMonth=='tous')?'selected':'' }}>Tous</option>
                 @foreach($usedMonths as $month)
-                    <option value="{{ $month->month }}" {{ ($displayMonth == $month->month)?'selected':'' }}>
-                        {{ $names[intval($month->month)-1] }}</option>
+                    <option value="{{ $month }}" {{ ($displayMonth == $month)?'selected':'' }}>
+                        {{ $names[$month - 1] }}</option>
                 @endforeach
             </select>
         </label>
