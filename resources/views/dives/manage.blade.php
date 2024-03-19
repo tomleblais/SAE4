@@ -3,19 +3,20 @@
     use App\Models\Personne;use App\Models\Plongee;use Illuminate\Database\Eloquent\Collection;use Illuminate\Support\Facades\DB;
 
     /** @var string $displayMonth */
+    if (string $displayMonth == 'cur') $displayMonth = now()->month;
+
     /** @var string $sortOrder */
     /** @var bool $sortDir */
     /** @var bool $actives */
-
-    if ($displayMonth == 'cur') $displayMonth = now()->month;
-
     session()->put([
             'actives' => $actives?'true':'false',
             'mois' => $displayMonth,
             'order' => $sortOrder,
             'dir' => $sortDir?'true':'false'
-            ]);
-
+        ]
+    );
+    
+    /** @var bool $actives */
     function getSortLink(string $title, string $field, string $order, bool $act, bool $dir) : string {
         if ($field === $order){
             return "&nbsp;<a href='?actives=".($act?'true':'false')."&order=$field&dir=".($dir?'false':'true')
@@ -24,16 +25,22 @@
             return "&nbsp;<a href='?actives=".($act?'true':'false')."&order=$field&dir=false'>$title &nbsp -</a>";
         }
     }
+
     /** @var Personne $user */
+    /** @var string $displayMonth */
     $req = Plongee::with(['lieu', 'niveau', 'moment',
         'participants'])->where('PLO_active',$actives)->orderBy('PLO_date')->orderBy('PLO_moment');
     if (! $user->isDirector() && ! $user->isSecretary())
         $req->where('PLO_directeur', $user->PER_id);
-    if ($displayMonth != 'tous')
+    if ($displayMonth != 'tous'){
         $req->whereMonth('PLO_date', $displayMonth);
+    }
 
     /** @var Collection|Plongee[] $dives */
     $dives = $req->get();
+
+    /** @var string $sortOrder */
+    /** @var bool $sortDir */
     switch ($sortOrder) {
         case 'date' : if ($sortDir) $dives = $dives->reverse() ;break;
         case 'lieu' : $dives = $dives->sortBy('lieu.LIE_libelle', SORT_NATURAL, $sortDir); break;
@@ -44,11 +51,16 @@
     }
 
     $names=['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre'
-            , 'décembre'];
+            , 'décembre'
+    ];
+
     $usedMonths = DB::select("SELECT distinct month(PLO_date) as month
              FROM PLO_PLONGEES WHERE PLO_active = :act
              ORDER BY month", ['act'=>$actives?1:0]);
+
 @endphp
+
+
 <x-page ariane="Accueil-Gestion des plongées">
     <form method="post" class="w3-padding">@csrf
         <input type="hidden" name="order" value="{{$sortOrder}}">
