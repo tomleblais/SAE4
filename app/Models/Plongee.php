@@ -197,7 +197,7 @@ class Plongee extends Model
     }
 
     public function isCancelled() : bool {
-        return false;
+        return $this->PLO_etat == 5;
     }
 
     public function isLocked() : bool {

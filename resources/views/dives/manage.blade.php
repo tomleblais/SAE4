@@ -112,7 +112,8 @@
                     $nbFree = $dive->nbFreeSlots();
                     if ($nbFree <= 0)
                         $color = 'w3-red';
-                    elseif ($nbFree<=5)
+
+                    elseif ($nbFree <=5)
                         $color = 'w3-yellow';
                     else
                         $color = 'w3-green';
