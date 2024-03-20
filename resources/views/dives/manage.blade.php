@@ -43,9 +43,7 @@
     }
     $names=['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre'
             , 'décembre'];
-    $usedMonths = DB::select("SELECT distinct month(PLO_date) as month
-             FROM PLO_PLONGEES WHERE PLO_active = :act
-             ORDER BY month", ['act'=>$actives?1:0]);
+    $usedMonths = range(1, 12);
 @endphp
 <x-page ariane="Accueil-Gestion des plongées">
     <form method="post" class="w3-padding">@csrf
@@ -67,8 +65,8 @@
         <label>Mois : <select name="mois" onchange="this.form.submit()">
                 <option value="tous" {{ ($displayMonth=='tous')?'selected':'' }}>Tous</option>
                 @foreach($usedMonths as $month)
-                    <option value="{{ $month->month }}" {{ ($displayMonth == $month->month)?'selected':'' }}>
-                        {{ $names[intval($month->month)-1] }}</option>
+                    <option value="{{ $month }}" {{ ($displayMonth == $month)?'selected':'' }}>
+                        {{ $names[$month - 1] }}</option>
                 @endforeach
             </select>
         </label>

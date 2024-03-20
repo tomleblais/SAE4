@@ -1,6 +1,7 @@
-//require('./bootstrap');
-let dragOrigin = null;
-let dragContent = null;
+/**
+ * Fonction appelée lors du chargement de la page.
+ * Configure les événements nécessaires après le chargement du DOM.
+ */
 function onLoad() {
     let element = document.querySelector(".vanish");
     if (element !== null)
@@ -9,65 +10,72 @@ function onLoad() {
         }
 }
 
+/**
+ * Fonction appelée lorsqu'un élément est déplacé au-dessus d'une zone de dépôt.
+ * Vérifie si le dépôt est autorisé en fonction de l'élément déplacé et de la zone de dépôt.
+ * @param {Event} ev - L'événement de glisser-déposer.
+ * @param {number} target_id - L'ID de la zone de dépôt.
+ */
 function allowDrop(ev, target_id) {
-    /*
-    let raw = ev.dataTransfer.getData("text"); // does not work in chrome
-    var data = raw.split(" ");
-    */
     let data = [dragOrigin, dragContent];
-    //console.log("considering drop of "+data[1]+" from "+ data[0] + " to "+target_id);
-    if (target_id === data[0]) { // not moved
+    if (target_id === data[0]) { // non déplacé
         ev.dataTransfer.dropEffect = 'none';
-        //console.log("not moved");
-        return
+        return;
     }
     if ((data[0] === -1) && (target_id !== -1)) {
-        ev.preventDefault(); // allow drop from dive to palanquee
-        //console.log("-> ok add to palanquee")
+        ev.preventDefault(); // autoriser le dépôt de la plongée à la palanquée
         ev.dataTransfer.dropEffect = 'link';
     } else if ((data[0] !== -1) && (target_id === -1)) {
-        ev.preventDefault(); // allow drop from palanquee to dive
-        //console.log("-> ok remove from palanquee")
+        ev.preventDefault(); // autoriser le retrait de la palanquée à la plongée
         ev.dataTransfer.dropEffect = 'move';
     } else if ((data[0] !== -1) && (target_id !== data[0])) {
-        ev.preventDefault(); // allow drop from palanquee to other palanquee
+        ev.preventDefault(); // autoriser le déplacement entre les palanquées
         ev.dataTransfer.dropEffect = 'move';
-        //console.log("-> ok move between palanquees")
     } else {
         ev.dataTransfer.dropEffect = 'none';
-        //console.log("-> not ok")
     }
 }
 
+/**
+ * Fonction appelée lorsqu'un élément est déplacé.
+ * @param {Event} ev - L'événement de glisser-déposer.
+ * @param {number} origin_id - L'ID de l'origine de l'élément déplacé.
+ * @param {number} content_id - L'ID du contenu déplacé.
+ */
 function drag(ev, origin_id, content_id) {
-    let data = ""+origin_id+" "+content_id;
+    let data = "" + origin_id + " " + content_id;
     dragOrigin = origin_id;
     dragContent = content_id;
     ev.dataTransfer.setData("text", data);
     ev.dataTransfer.effectAllowed = 'all';
-
-    console.log("dragging "+content_id+" from "+ origin_id +" : "+data)
 }
 
+/**
+ * Fonction appelée lorsqu'un élément est déposé.
+ * @param {Event} ev - L'événement de glisser-déposer.
+ * @param {number} target_id - L'ID de la zone de dépôt.
+ */
 function drop(ev, target_id) {
-    //var data = ev.dataTransfer.getData("text").split(" "); // using globals allow for keeping data types
     let data = [dragOrigin, dragContent];
     if ((data[0] === -1) && (target_id !== -1)) {
-        ev.preventDefault(); // allow drop from dive to palanquee
-        console.log("adding to "+target_id);
+        ev.preventDefault(); // autoriser le dépôt de la plongée à la palanquée
         addToPalanquee(data[1], target_id).then(() => location.reload()).catch(r => displayError(r));
     }
     else if ((data[0] !== -1) && (target_id === -1)) {
-        ev.preventDefault(); // allow drop from palanquee to dive
-        console.log("removing from "+data[0]);
+        ev.preventDefault(); // autoriser le retrait de la palanquée à la plongée
         removeFromPalanquee(data[1]).then(() => location.reload()).catch(r => displayError(r));
     }
     else if ((data[0] !== -1) && (target_id !== -1)) {
-        console.log("moving to "+target_id);
         moveBetweenPalanquees(data[1], data[0], target_id).then(() => location.reload()).catch(r => displayError(r));
     }
 }
 
+/**
+ * Ajoute un adhérent à une palanquée.
+ * @param {number} adherent_id - L'ID de l'adhérent à ajouter.
+ * @param {number} palanquee_id - L'ID de la palanquée à laquelle ajouter l'adhérent.
+ * @returns {Promise} - Une promesse résolue lorsque la requête est réussie, rejetée avec un message d'erreur sinon.
+ */
 async function addToPalanquee(adherent_id, palanquee_id) {
     const res = await fetch("/api/palanquees/" + palanquee_id + "/membres", {
         method: "POST",
@@ -82,6 +90,11 @@ async function addToPalanquee(adherent_id, palanquee_id) {
     }
 }
 
+/**
+ * Retire un membre d'une palanquée.
+ * @param {number} member_id - L'ID du membre à retirer.
+ * @returns {Promise} - Une promesse résolue lorsque la requête est réussie, rejetée avec un message d'erreur sinon.
+ */
 async function removeFromPalanquee(member_id) {
     const res = await fetch("/api/palanquees/membres/" + member_id, {
         method: "DELETE",
@@ -95,6 +108,13 @@ async function removeFromPalanquee(member_id) {
     }
 }
 
+/**
+ * Déplace un membre entre les palanquées.
+ * @param {number} member_id - L'ID du membre à déplacer.
+ * @param {number} fromPalanquee_id - L'ID de la palanquée d'origine du membre.
+ * @param {number} toPalanquee_id - L'ID de la palanquée de destination du membre.
+ * @returns {Promise} - Une promesse résolue lorsque la requête est réussie, rejetée avec un message d'erreur sinon.
+ */
 async function moveBetweenPalanquees(member_id, fromPalanquee_id, toPalanquee_id) {
     const res = await fetch("/api/palanquees/membres/" + member_id, {
         method: "PUT",
@@ -109,6 +129,11 @@ async function moveBetweenPalanquees(member_id, fromPalanquee_id, toPalanquee_id
     }
 }
 
+/**
+ * Affiche une erreur.
+ * @param {Object} json_error - L'objet JSON représentant l'erreur.
+ */
 function displayError(json_error) {
-    console.log(json_error); // TODO
+    console.log(json_error); // TODO: Gérer l'affichage de l'erreur de manière appropriée
 }
+
