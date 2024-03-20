@@ -54,6 +54,7 @@
             , 'décembre'
     ];
 
+    /** @var bool $actives */
     $usedMonths = DB::select("SELECT distinct month(PLO_date) as month
              FROM PLO_PLONGEES WHERE PLO_active = :act
              ORDER BY month", ['act'=>$actives?1:0]);
