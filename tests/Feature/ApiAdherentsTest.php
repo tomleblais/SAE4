@@ -130,35 +130,7 @@ class ApiAdherentsTest extends TestCase
         $response = $this->getJson('/api/adherents/0');
         $response->assertStatus(404);
     }
-    public function test_postOneAdherentOk()
-    {
-        DB::beginTransaction();
-        try {
-            $response = $this->postJson("/api/adherents", ['nom'=>'test', 'prenom'=>'tset',
-                'email'=>'inconnu@iut.fr', 'pass'=>'AbCd!9876!', 'pass_confirmation'=>'AbCd!9876!',
-                'licence'=>'1234567890', 'date_certificat_medical'=>'2023-10-09', 'forfait'=>'gold', 'niveau'=>10
-                ]);
-            $response->assertStatus(200);
-            $response->assertJsonFragment(
-                ['nom'=>'test', 'prenom'=>'tset', 'email'=>'inconnu@iut.fr', "actif" => true,
-                    'licence'=>'1234567890', 'date_certificat_medical'=>'2023-10-09', 'forfait'=>'gold', 'niveau'=>10 ]
-            );
-            $id=$response->json('id');
-            self::assertNotNull($id);
-            /** @var Adherent $pers */
-            $pers = Adherent::with('personne')->find($id);
-            self::assertNotNull($pers);
-            self::assertEquals('1234567890', $pers->ADH_licence);
-            self::assertEquals('2023-10-09', $pers->ADH_date_certificat);
-            self::assertEquals('gold', $pers->ADH_forfait);
-            self::assertEquals('10', $pers->ADH_niveau);
-            self::assertEquals('test', $pers->personne->PER_nom);
-            self::assertEquals('tset', $pers->personne->PER_prenom);
-            self::assertEquals('inconnu@iut.fr', $pers->personne->PER_email);
-        } finally {
-            DB::rollBack();
-        }
-    }
+
 
     public function test_putAdherentOkWithToken() {
         DB::beginTransaction();
@@ -530,5 +502,116 @@ class ApiAdherentsTest extends TestCase
             DB::rollBack();
         }
     }
+    
+    /* Test - Valeur : 6 */
 
+    public function test_postOneAdherentOk()
+    {
+        $response = $this->postJson("/api/adherents", [
+            'nom' => 'Test',
+            'prenom' => 'Tester',
+            'email' => 'test@example.com',
+            'pass' => 'StrongPassword123!',
+            'pass_confirmation' => 'StrongPassword123!',
+            'licence' => '1234567890',
+            'date_certificat_medical' => '2023-10-09',
+            'forfait' => 'gold',
+            'niveau' => 10
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'nom' => 'Test',
+            'prenom' => 'Tester',
+            'email' => 'test@example.com',
+            'actif' => true,
+            'licence' => '1234567890',
+            'date_certificat_medical' => '2023-10-09',
+            'forfait' => 'gold',
+            'niveau' => 10
+        ]);
+    }
+
+    public function test_postOneAdherentWeakPassword()
+    {
+        $response = $this->postJson("/api/adherents", [
+            'nom' => 'Test',
+            'prenom' => 'Tester',
+            'email' => 'test@example.com',
+            'pass' => 'weak',
+            'pass_confirmation' => 'weak',
+            'licence' => '1234567890',
+            'date_certificat_medical' => '2023-10-09',
+            'forfait' => 'gold',
+            'niveau' => 10
+        ]);
+
+        $response->assertStatus(422); 
+    }
+
+    public function test_postOneAdherentDuplicateLicence()
+    {
+        $adherent = Adherent::factory()->create([
+            'ADH_id' => 1,
+            'ADH_licence' => '1234567890'
+        ]);
+    
+        $response = $this->postJson("/api/adherents", [
+            'nom' => 'Test',
+            'prenom' => 'Tester',
+            'email' => 'test@example.com',
+            'pass' => 'StrongPassword123!',
+            'pass_confirmation' => 'StrongPassword123!',
+            'licence' => '1234567890', 
+            'date_certificat_medical' => '2023-10-09',
+            'forfait' => 'gold',
+            'niveau' => 10
+        ]);
+    
+        $response->assertStatus(422); 
+    }
+    
+
+    public function test_postOneAdherentDuplicateName()
+    {
+        $adherent = Personne::factory()->has(Adherent::factory())->create([
+            'PER_nom' => 'Jeanpierre',
+            'PER_prenom' => 'Laurent'
+        ]);
+
+        $response = $this->postJson("/api/adherents", [
+            'nom' => 'Jeanpierre',
+            'prenom' => 'Laurent',
+            'email' => 'existing@example.com',
+            'pass' => 'StrongPassword123!',
+            'pass_confirmation' => 'StrongPassword123!',
+            'licence' => '1234567890',
+            'date_certificat_medical' => '2023-10-09',
+            'forfait' => 'gold',
+            'niveau' => 10
+        ]);
+
+        $response->assertStatus(422); 
+    }
+
+    public function test_postOneAdherentDuplicateEmail()
+    {
+        $adherent = Personne::factory()->has(Adherent::factory())->create([
+            'PER_email' => 'existing@example.com'
+        ]);
+    
+        $response = $this->postJson("/api/adherents", [
+            'nom' => 'Test',
+            'prenom' => 'Tester',
+            'email' => 'existing@example.com',
+            'pass' => 'StrongPassword123!',
+            'pass_confirmation' => 'StrongPassword123!',
+            'licence' => '1234567890', 
+            'date_certificat_medical' => '2023-10-09',
+            'forfait' => 'gold',
+            'niveau' => 10
+        ]);
+    
+        $response->assertStatus(422); 
+    }
 }

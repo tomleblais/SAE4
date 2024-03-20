@@ -45,13 +45,17 @@
                style="padding: 16px; white-space: normal">Voir la page adhérent</a>
         @endif
         @if($active)
+            @if(! Personne::find(old('id'))->isLastDirector())
             <input type="submit" name="deletePerson" class="w3-round-large"
                    style="padding: 16px; white-space: normal" value="Supprimer" >
+                @endif
         @else
             <input type="submit" name="deletePerson" class="w3-round-large"
                    style="padding: 16px; white-space: normal" value="Supprimer définitivement" >
             <input type="submit" name="restorePerson" class="w3-round-large"
                    style="padding: 16px; white-space: normal" value="Restaurer" >
+
+
         @endif
     </x-slot>
 </x-form>

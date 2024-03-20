@@ -76,7 +76,11 @@ class Personne extends Model implements Authenticatable
      * @var array
      */
     protected $casts = [
-        'PER_active' => 'boolean'
+        'PER_active' => 'boolean',
+        'AUT_directeur_section' => 'boolean',
+        'AUT_securite_surface' => 'boolean',
+        'AUT_pilote' => 'boolean',
+        'AUT_secretaire' => 'boolean',
     ];
 
     // Relationships
@@ -128,6 +132,10 @@ class Personne extends Model implements Authenticatable
     public function isDirector(): bool {
         return $this->autorisations()->exists() &&
             $this->autorisations->AUT_directeur_section;
+    }
+
+    public function isLastDirector(): bool {
+        return Autorisations::where('AUT_directeur_section', 1)->count() === 1 && $this->isDirector();
     }
 
     public function isSecretary(): bool {

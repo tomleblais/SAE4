@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Autorisations;
 use App\Models\Personne;
+use App\Models\Autorisation;
 use App\Models\Plongee;
 use Database\Seeders\TestPersonneSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -16,24 +18,6 @@ class ApiPersonnesTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_getPersonnesOk()
-    {
-        DB::beginTransaction();
-        try {
-            /** @var Personne[]|Collection $persons */
-            $persons = Personne::factory()->count(7)->state(['PER_active' => true])->create();
-            Personne::factory()->count(4)->state(['PER_active' => false])->create();
-            $response = $this->getJson('/api/personnes');
-            $response->assertStatus(200);
-            $response->assertJsonCount(8); // plus super-admin
-            $response->assertJsonStructure(['*' => ['id', 'nom', 'prenom', 'email', 'actif']]);
-            foreach ($persons as /** @var Personne $p */$p) {
-                $response->assertJsonFragment(['id'=>$p->PER_id]);
-            }
-        } finally {
-            DB::rollBack();
-        }
-    }
     public function test_getPersonnesInactives()
     {
         DB::beginTransaction();
@@ -422,4 +406,98 @@ class ApiPersonnesTest extends TestCase
         }
     }
 
+    public function test_getPersonnesOk()
+    {
+        DB::beginTransaction();
+        try {
+            /** @var Personne[]|Collection $persons */
+            $persons = Personne::factory()->count(7)->state(['PER_active' => true])->create();
+            Personne::factory()->count(4)->state(['PER_active' => false])->create();
+            $response = $this->getJson('/api/personnes');
+            $response->assertStatus(200);
+            $response->assertJsonCount(8); // plus super-admin
+            $response->assertJsonStructure(['*' => ['id', 'nom', 'prenom', 'email', 'actif']]);
+            foreach ($persons as /** @var Personne $p */$p) {
+                $response->assertJsonFragment(['id'=>$p->PER_id]);
+            }
+        } finally {
+            DB::rollBack();
+        }
+    }
+
+    /* Test - Valeur : 6 */
+
+    public function test_putPersonnePilot()
+    {
+        DB::beginTransaction();
+        try {
+            /** @var Personne $personne */
+            $personne = Personne::factory()->active()->create();
+            $response = self::putJson("api/personnes/$personne->PER_id", ['pilote' => 'true']);
+            $response->assertStatus(200);
+            $personne->refresh();
+            self::assertEquals(true, $personne->isPilot());
+        } finally {
+            DB::rollBack();
+        }
+    }
+
+    public function test_putPersonneDirector()
+    {
+        DB::beginTransaction();
+        try {
+            /** @var Personne $personne */
+            $personne = Personne::factory()->active()->create();
+            $response = self::putJson("api/personnes/$personne->PER_id", ['directeur_de_section' => 'true']);
+            $response->assertStatus(200);
+            $personne->refresh();
+            self::assertEquals(true, $personne->isDirector());
+        } finally {
+            DB::rollBack();
+        }
+    }
+
+    public function test_putPersonneSecretary()
+    {
+        DB::beginTransaction();
+        try {
+            /** @var Personne $personne */
+            $personne = Personne::factory()->active()->create();
+            $response = self::putJson("api/personnes/$personne->PER_id", ['secretaire' => 'true']);
+            $response->assertStatus(200);
+            $personne->refresh();
+            self::assertEquals(true, $personne->isSecretary());
+        } finally {
+            DB::rollBack();
+        }
+    }
+
+    public function test_putPersonneSecurity()
+    {
+        DB::beginTransaction();
+        try {
+            /** @var Personne $personne */
+            $personne = Personne::factory()->active()->create();
+            $response = self::putJson("api/personnes/$personne->PER_id", ['securite_de_surface' => 'true']);
+            $response->assertStatus(200);
+            $personne->refresh();
+            self::assertEquals(true, $personne->isSurfaceSecurity());
+        } finally {
+            DB::rollBack();
+        }
+    }
+
+    public function test_putPersonneWithBadPilotValue()
+    {
+        DB::beginTransaction();
+        try {
+            $personne = Personne::factory()->active()->create();
+            $response = $this->putJson("api/personnes/$personne->PER_id", ['pilote' => 'not_a_boolean']);
+            $response->assertStatus(422);
+            $personne->refresh();
+            self::assertFalse($personne->isPilot());
+        } finally {
+            DB::rollBack();
+        }
+    }
 }

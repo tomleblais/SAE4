@@ -414,4 +414,75 @@ class ApiPalanqueesTest extends TestCase
             DB::rollBack();
         }
     }
+
+    /* Test - Valeur : 6 */
+
+    public function test_putPalanqueesMaxDuration()
+    {
+        DB::beginTransaction();
+        try {
+            TestPlongeeSeeder::run(1,10, null, 4, 0, true);
+            /** @var Palanquee $palanquee */
+            $p = Palanquee::first();
+            $response = self::putJson("api/palanquees/$p->PAL_id", ['max_duree'=>1]);
+            $response->assertStatus(200);
+            $p->refresh();
+            $response->assertJsonFragment(['max_duree'=>1]);
+            self::assertEquals(1, $p->PAL_max_duree);
+        } finally {
+            DB::rollBack();
+        }
+    }
+
+    public function test_putPalanqueesMaxDepth()
+    {
+        DB::beginTransaction();
+        try {
+            TestPlongeeSeeder::run(1,10, null, 4, 0, true);
+            /** @var Palanquee $palanquee */
+            $p = Palanquee::first();
+            $response = self::putJson("api/palanquees/$p->PAL_id", ['max_profondeur'=>12]);
+            $response->assertStatus(200);
+            $p->refresh();
+            self::assertEquals(12, $p->PAL_max_prof);
+            $response->assertJsonFragment(['max_profondeur'=>12]);
+        } finally {
+            DB::rollBack();
+        }
+    }
+
+    public function test_putPalanqueesMaxDurationWithBadData()
+    {
+        DB::beginTransaction();
+        try {
+            TestPlongeeSeeder::run(1, 10, null, 4, 0, true);
+            /** @var Palanquee $palanquee */
+            $p = Palanquee::first();
+            $response = self::putJson("api/palanquees/$p->PAL_id", ['max_duree' => -1]);
+            $response->assertStatus(422); 
+            $p->refresh();
+            self::assertNotEquals(-1, $p->PAL_max_duree); 
+            $response->assertJsonMissing(['max_duree' => -1]);
+        } finally {
+            DB::rollBack();
+        }
+    }
+
+    public function test_putPalanqueesMaxDepthWithBadData()
+    {
+        DB::beginTransaction();
+        try {
+            TestPlongeeSeeder::run(1, 10, null, 4);
+            /** @var Palanquee $palanquee */
+            $p = Palanquee::first();
+            $response = self::putJson("api/palanquees/$p->PAL_id", ['max_profondeur' => 'invalid']);
+            $response->assertStatus(422); 
+            $p->refresh();
+            self::assertNotEquals('invalid', $p->PAL_max_prof); 
+            $response->assertJsonMissing(['max_profondeur' => 'invalid']);
+        } finally {
+            DB::rollBack();
+        }
+    }
+
 }

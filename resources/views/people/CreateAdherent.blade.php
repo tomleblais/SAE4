@@ -12,5 +12,5 @@
     <x-input type="password" name="pass_confirmation" text="Confirmation du mot de passe" maxlength=60 required />
     <x-input type="email" name="email" text="Addresse de Courriel" maxlength=100 required/>
     <x-input type="text" name="forfait" text="Forfait de plongée souscrit" maxlength=45 />
-    <x-select name="niveau" text="Niveau atteint" :collection="Niveau::all()"/>
+    <x-select name="niveau" text="Niveau atteint" :collection="App\Models\Niveau::all()"/>
 </x-form>

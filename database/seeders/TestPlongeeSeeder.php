@@ -23,7 +23,7 @@ class TestPlongeeSeeder extends Seeder
      * @return void
      * @throws \Exception if DateInterval is not correct
      */
-    public static function run($nbDives=10, $nbDivers=50, $active=null, $minDivers=0, $minLevel=0)
+    public static function run($nbDives=10, $nbDivers=50, $active=null, $minDivers=0, $minLevel=0, $etat=false)
     {
         if (Autorisations::count('*') < 4)
             TestPersonneSeeder::run($nbDivers);
@@ -31,7 +31,9 @@ class TestPlongeeSeeder extends Seeder
             'PLO_pilote' => TestPersonneSeeder::$pilot,
             'PLO_securite' => TestPersonneSeeder::$security];
         if (isset($active)) $state['PLO_active'] = $active;
-        $plongees = Plongee::factory()->count($nbDives)->state($state)->create();
+
+        $plongees = Plongee::factory()->count($nbDives)->state($state)->minLevel($minLevel)->create();
+
         foreach ($plongees as /** @var Plongee $dive*/ $dive) {
             $nb = rand($minDivers, $dive->PLO_max_plongeurs);
 
@@ -104,6 +106,9 @@ class TestPlongeeSeeder extends Seeder
                             new DateInterval("PT" . $palanquee->PAL_duree_realisee . "M"));
                         $palanquee->save();
                     }
+
+
+
                     if (count($dive->getPossibleStates()) > 2 && rand(1, 20) < 15) { //Parametrized, Validated or Cancelled
                         $dive->PLO_etat = Etat::$VALIDATED;
                         if (now()->diff($dive->PLO_date)->y <= 1)
@@ -113,6 +118,10 @@ class TestPlongeeSeeder extends Seeder
             }
             if (rand(1,100)<=5)
                 $dive->PLO_etat = Etat::$CANCELLED;
+            
+            if($etat)
+                $dive->PLO_etat = Etat::$CREATED;
+            
             $dive->save();
         }
     }
