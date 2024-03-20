@@ -63,6 +63,7 @@ class Adherent extends Model
      */
     public static function all($columns = ['*'])
     {
+        dd("Oh une session ouverte !");
         return parent::with('personne')->get($columns);
     }
 
