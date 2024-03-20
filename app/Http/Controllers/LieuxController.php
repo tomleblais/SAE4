@@ -90,6 +90,19 @@ class LieuxController extends Controller
         return Response()->redirectToRoute("/lieux/".$lieu->LIE_id."/edition");
     }
 
+
+    /**
+     * Display the correct view with the data.
+     *
+     * @param Lieu $Lieu who have to be edited
+     * @return EditSite.blade.php view
+     */
+    public function editView(\App\Models\Lieu $id)
+    {
+        $active = \App\Models\Lieu::All()->find($id)->LIE_active;
+        return view("sites/EditSite",["active" => $active]);
+    }
+
     /**
      * Update the specified resource in storage.
      *

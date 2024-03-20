@@ -1,0 +1,204 @@
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+DROP TABLE IF EXISTS `PLO_ADHERENTS`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PLO_ADHERENTS` (
+  `ADH_id` int NOT NULL,
+  `ADH_licence` varchar(45) DEFAULT NULL,
+  `ADH_date_certificat` date DEFAULT NULL,
+  `ADH_forfait` varchar(45) DEFAULT NULL,
+  `ADH_niveau` int NOT NULL,
+  PRIMARY KEY (`ADH_id`),
+  UNIQUE KEY `ADH_licence_UNIQUE` (`ADH_licence`),
+  KEY `fk_PLO_ADHERENTS_PLO_NIVEAUX_idx` (`ADH_niveau`),
+  CONSTRAINT `fk_PLO_ADHERENT_PLO_NIVEAU` FOREIGN KEY (`ADH_niveau`) REFERENCES `PLO_NIVEAUX` (`NIV_id`),
+  CONSTRAINT `fk_PLO_ADHERENTS_PLO_PEOPLE1` FOREIGN KEY (`ADH_id`) REFERENCES `PLO_PERSONNES` (`PER_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PLO_AUTORISATIONS`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PLO_AUTORISATIONS` (
+  `AUT_personne` int NOT NULL,
+  `AUT_directeur_section` tinyint NOT NULL DEFAULT '0',
+  `AUT_securite_surface` tinyint NOT NULL DEFAULT '0',
+  `AUT_pilote` tinyint NOT NULL DEFAULT '0',
+  `AUT_secretaire` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`AUT_personne`),
+  CONSTRAINT `fk_PLO_AUTORISATIONS_PLO_PEOPLE1` FOREIGN KEY (`AUT_personne`) REFERENCES `PLO_PERSONNES` (`PER_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PLO_BATEAUX`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PLO_BATEAUX` (
+  `BAT_id` int NOT NULL AUTO_INCREMENT,
+  `BAT_libelle` varchar(45) DEFAULT NULL,
+  `BAT_max_personnes` int DEFAULT NULL,
+  `BAT_active` tinyint NOT NULL DEFAULT '1',
+  PRIMARY KEY (`BAT_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PLO_ETATS`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PLO_ETATS` (
+  `ETA_id` int NOT NULL,
+  `ETA_libelle` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`ETA_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PLO_INCLUT`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PLO_INCLUT` (
+  `INC_id` int NOT NULL AUTO_INCREMENT,
+  `INC_palanquee` int NOT NULL,
+  `INC_adherent` int NOT NULL,
+  PRIMARY KEY (`INC_id`),
+  UNIQUE KEY `unique` (`INC_palanquee`,`INC_adherent`),
+  KEY `fk_PLO_INCLUT_PLO_PALANQUEES1_idx` (`INC_palanquee`),
+  KEY `fk_PLO_INCLUT_PLO_ADHERENTS1_idx` (`INC_adherent`),
+  CONSTRAINT `fk_PLO_INCLUT_PLO_ADHERENTS1` FOREIGN KEY (`INC_adherent`) REFERENCES `PLO_ADHERENTS` (`ADH_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_PLO_INCLUT_PLO_PALANQUEES1` FOREIGN KEY (`INC_palanquee`) REFERENCES `PLO_PALANQUEES` (`PAL_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PLO_LIEUX`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PLO_LIEUX` (
+  `LIE_id` int NOT NULL AUTO_INCREMENT,
+  `LIE_libelle` varchar(45) DEFAULT NULL,
+  `LIE_description` varchar(100) DEFAULT NULL,
+  `LIE_active` tinyint NOT NULL DEFAULT '1',
+  PRIMARY KEY (`LIE_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PLO_MIGRATIONS`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PLO_MIGRATIONS` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PLO_MOMENTS`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PLO_MOMENTS` (
+  `MOM_id` int NOT NULL AUTO_INCREMENT,
+  `MOM_libelle` varchar(45) NOT NULL,
+  PRIMARY KEY (`MOM_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PLO_NIVEAUX`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PLO_NIVEAUX` (
+  `NIV_id` int NOT NULL,
+  `NIV_code` varchar(6) NOT NULL,
+  `NIV_libelle` varchar(45) NOT NULL,
+  `NIV_prof_encadre` int NOT NULL,
+  `NIV_prof_autonome` int NOT NULL,
+  `NIV_niveau` int NOT NULL,
+  `NIV_guide` tinyint NOT NULL DEFAULT '0',
+  `NIV_directeur` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`NIV_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PLO_PALANQUEES`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PLO_PALANQUEES` (
+  `PAL_id` int NOT NULL AUTO_INCREMENT,
+  `PAL_plongee` int NOT NULL,
+  `PAL_max_prof` int NOT NULL,
+  `PAL_max_duree` int NOT NULL,
+  `PAL_heure_immersion` time DEFAULT NULL,
+  `PAL_heure_sortie` time DEFAULT NULL,
+  `PAL_prof_realisee` int DEFAULT NULL,
+  `PAL_duree_realisee` int DEFAULT NULL,
+  PRIMARY KEY (`PAL_id`),
+  KEY `fk_PLO_PALANQUEES_PLO_PLONGEES1_idx` (`PAL_plongee`),
+  CONSTRAINT `fk_PLO_PALANQUEES_PLO_PLONGEES1` FOREIGN KEY (`PAL_plongee`) REFERENCES `PLO_PLONGEES` (`PLO_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PLO_PARTICIPE`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PLO_PARTICIPE` (
+  `PAR_id` int NOT NULL AUTO_INCREMENT,
+  `PAR_plongee` int NOT NULL,
+  `PAR_adherent` int NOT NULL,
+  PRIMARY KEY (`PAR_id`),
+  KEY `fk_PLO_PARTICIPE_PLO_PLONGEES1_idx` (`PAR_plongee`),
+  KEY `fk_PLO_PARTICIPE_PLO_ADHERENTS1_idx` (`PAR_adherent`),
+  CONSTRAINT `fk_PLO_PARTICIPE_PLO_ADHERENTS1` FOREIGN KEY (`PAR_adherent`) REFERENCES `PLO_ADHERENTS` (`ADH_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_PLO_PARTICIPE_PLO_PLONGEES1` FOREIGN KEY (`PAR_plongee`) REFERENCES `PLO_PLONGEES` (`PLO_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PLO_PERSONNES`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PLO_PERSONNES` (
+  `PER_id` int NOT NULL AUTO_INCREMENT,
+  `PER_nom` varchar(45) NOT NULL,
+  `PER_prenom` varchar(45) NOT NULL,
+  `PER_pass` varchar(60) NOT NULL COMMENT 'at least 60 chars for Laravel''s Auth',
+  `PER_email` varchar(100) NOT NULL,
+  `PER_remember_token` varchar(150) DEFAULT NULL COMMENT 'Stores Laravel token',
+  `PER_active` tinyint NOT NULL DEFAULT '1',
+  PRIMARY KEY (`PER_id`),
+  UNIQUE KEY `ADH_nom_prenom_UNIQUE` (`PER_nom`,`PER_prenom`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PLO_PLONGEES`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PLO_PLONGEES` (
+  `PLO_id` int NOT NULL AUTO_INCREMENT,
+  `PLO_lieu` int NOT NULL,
+  `PLO_bateau` int NOT NULL,
+  `PLO_date` date DEFAULT NULL,
+  `PLO_moment` int NOT NULL,
+  `PLO_min_plongeurs` int DEFAULT NULL,
+  `PLO_max_plongeurs` int DEFAULT NULL,
+  `PLO_niveau` int NOT NULL,
+  `PLO_active` tinyint NOT NULL DEFAULT '1',
+  `PLO_etat` int NOT NULL,
+  `PLO_pilote` int NOT NULL,
+  `PLO_securite` int NOT NULL,
+  `PLO_directeur` int NOT NULL,
+  PRIMARY KEY (`PLO_id`),
+  KEY `fk_PLO_PLONGEES_PLO_LIEUX1_idx` (`PLO_lieu`),
+  KEY `fk_PLO_PLONGEES_PLO_BATEAUX1_idx` (`PLO_bateau`),
+  KEY `fk_PLO_PLONGEES_PLO_MOMENTS1_idx` (`PLO_moment`),
+  KEY `fk_PLO_PLONGEES_PLO_NIVEAUX1_idx` (`PLO_niveau`),
+  KEY `fk_PLO_PLONGEES_PLO_ETAT1_idx` (`PLO_etat`),
+  KEY `fk_PLO_PLONGEES_PLO_PERSONNES1_idx` (`PLO_pilote`),
+  KEY `fk_PLO_PLONGEES_PLO_PERSONNES2_idx` (`PLO_securite`),
+  KEY `fk_PLO_PLONGEES_PLO_PERSONNES3_idx` (`PLO_directeur`),
+  CONSTRAINT `fk_PLO_PLONGEES_PLO_ADHERENTS` FOREIGN KEY (`PLO_directeur`) REFERENCES `PLO_ADHERENTS` (`ADH_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_PLO_PLONGEES_PLO_BATEAUX1` FOREIGN KEY (`PLO_bateau`) REFERENCES `PLO_BATEAUX` (`BAT_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_PLO_PLONGEES_PLO_ETAT1` FOREIGN KEY (`PLO_etat`) REFERENCES `PLO_ETATS` (`ETA_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_PLO_PLONGEES_PLO_LIEUX1` FOREIGN KEY (`PLO_lieu`) REFERENCES `PLO_LIEUX` (`LIE_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_PLO_PLONGEES_PLO_MOMENTS1` FOREIGN KEY (`PLO_moment`) REFERENCES `PLO_MOMENTS` (`MOM_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_PLO_PLONGEES_PLO_NIVEAUX1` FOREIGN KEY (`PLO_niveau`) REFERENCES `PLO_NIVEAUX` (`NIV_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_PLO_PLONGEES_PLO_PERSONNES1` FOREIGN KEY (`PLO_pilote`) REFERENCES `PLO_PERSONNES` (`PER_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_PLO_PLONGEES_PLO_PERSONNES2` FOREIGN KEY (`PLO_securite`) REFERENCES `PLO_PERSONNES` (`PER_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+

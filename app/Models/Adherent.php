@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
-use DateTime;
+use Database\Factories\AutorisationsFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-/** Stores the role of a diver.
+/**
+ * Class Adherent
+ *
+ * @package App\Models
+ *
  * @property int $ADH_id
  * @property string $ADH_licence
  * @property DateTime $ADH_date_certificat
@@ -16,17 +19,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $ADH_niveau
  * @property Personne $personne
  * @property Niveau $niveau
+ *
  * @method static Adherent find(int $id)
  * @method static Builder where($col, $op=null, $value=null)
  */
 class Adherent extends Model
 {
     use HasFactory;
-
-    public static function all($columns = ['*'])
-    {
-        return parent::with('personne')->get($columns);
-    }
 
     /**
      * The attributes that are mass assignable.
@@ -56,14 +55,31 @@ class Adherent extends Model
      */
     public $timestamps = false;
 
+    /**
+     * Retrieve all models from the database.
+     *
+     * @param  array  $columns
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public static function all($columns = ['*'])
+    {
+        dd("Oh une session ouverte !");
+        return parent::with('personne')->get($columns);
+    }
+
+    /**
+     * Convert the model instance to an array.
+     *
+     * @return array
+     */
     public function toArray(): array
     {
         $res = [
-            "id"=>$this->ADH_id,
-            "licence"=>$this->ADH_licence,
-            "date_certificat_medical"=>$this->ADH_date_certificat,
-            "forfait"=>$this->ADH_forfait,
-            "niveau"=>$this->ADH_niveau,
+            "id" => $this->ADH_id,
+            "licence" => $this->ADH_licence,
+            "date_certificat_medical" => $this->ADH_date_certificat,
+            "forfait" => $this->ADH_forfait,
+            "niveau" => $this->ADH_niveau,
         ];
         if ($this->relationLoaded("niveau"))
             $res = array_merge($res, [
@@ -84,21 +100,43 @@ class Adherent extends Model
 
     // Relationships
 
+    /**
+     * Get the niveau that belongs to the adherent.
+     *
+     * @return BelongsTo
+     */
     public function niveau(): BelongsTo
     {
         return $this->belongsTo(Niveau::class, "ADH_niveau", "NIV_id");
     }
 
+    /**
+     * Get the personne that belongs to the adherent.
+     *
+     * @return BelongsTo
+     */
     public function personne(): BelongsTo
     {
         return $this->belongsTo(Personne::class, "ADH_id", "PER_id");
     }
 
-    public function getId(): int {
+    /**
+     * Get the ID of the adherent.
+     *
+     * @return int
+     */
+    public function getId(): int
+    {
         return $this->ADH_id;
     }
 
-    public function getText(): string {
+    /**
+     * Get the text representation of the adherent's person.
+     *
+     * @return string
+     */
+    public function getText(): string
+    {
         return $this->personne->getText();
     }
 }

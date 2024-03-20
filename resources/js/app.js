@@ -1,6 +1,7 @@
-//require('./bootstrap');
-let dragOrigin = null;
-let dragContent = null;
+/**
+ * Function called when the page is loaded.
+ * Configures necessary events after DOM loading.
+ */
 function onLoad() {
     let element = document.querySelector(".vanish");
     if (element !== null)
@@ -9,65 +10,72 @@ function onLoad() {
         }
 }
 
+/**
+ * Function called when an element is dragged over a drop zone.
+ * Checks if dropping is allowed based on the dragged element and drop zone.
+ * @param {Event} ev - The drag and drop event.
+ * @param {number} target_id - The ID of the drop zone.
+ */
 function allowDrop(ev, target_id) {
-    /*
-    let raw = ev.dataTransfer.getData("text"); // does not work in chrome
-    var data = raw.split(" ");
-    */
     let data = [dragOrigin, dragContent];
-    //console.log("considering drop of "+data[1]+" from "+ data[0] + " to "+target_id);
     if (target_id === data[0]) { // not moved
         ev.dataTransfer.dropEffect = 'none';
-        //console.log("not moved");
-        return
+        return;
     }
     if ((data[0] === -1) && (target_id !== -1)) {
-        ev.preventDefault(); // allow drop from dive to palanquee
-        //console.log("-> ok add to palanquee")
+        ev.preventDefault(); // allow dropping from dive to dive group
         ev.dataTransfer.dropEffect = 'link';
     } else if ((data[0] !== -1) && (target_id === -1)) {
-        ev.preventDefault(); // allow drop from palanquee to dive
-        //console.log("-> ok remove from palanquee")
+        ev.preventDefault(); // allow removing from dive group to dive
         ev.dataTransfer.dropEffect = 'move';
     } else if ((data[0] !== -1) && (target_id !== data[0])) {
-        ev.preventDefault(); // allow drop from palanquee to other palanquee
+        ev.preventDefault(); // allow moving between dive groups
         ev.dataTransfer.dropEffect = 'move';
-        //console.log("-> ok move between palanquees")
     } else {
         ev.dataTransfer.dropEffect = 'none';
-        //console.log("-> not ok")
     }
 }
 
+/**
+ * Function called when an element is being dragged.
+ * @param {Event} ev - The drag and drop event.
+ * @param {number} origin_id - The ID of the origin of the dragged element.
+ * @param {number} content_id - The ID of the dragged content.
+ */
 function drag(ev, origin_id, content_id) {
-    let data = ""+origin_id+" "+content_id;
+    let data = "" + origin_id + " " + content_id;
     dragOrigin = origin_id;
     dragContent = content_id;
     ev.dataTransfer.setData("text", data);
     ev.dataTransfer.effectAllowed = 'all';
-
-    console.log("dragging "+content_id+" from "+ origin_id +" : "+data)
 }
 
+/**
+ * Function called when an element is dropped.
+ * @param {Event} ev - The drag and drop event.
+ * @param {number} target_id - The ID of the drop zone.
+ */
 function drop(ev, target_id) {
-    //var data = ev.dataTransfer.getData("text").split(" "); // using globals allow for keeping data types
     let data = [dragOrigin, dragContent];
     if ((data[0] === -1) && (target_id !== -1)) {
-        ev.preventDefault(); // allow drop from dive to palanquee
-        console.log("adding to "+target_id);
+        ev.preventDefault(); // allow dropping from dive to dive group
         addToPalanquee(data[1], target_id).then(() => location.reload()).catch(r => displayError(r));
     }
     else if ((data[0] !== -1) && (target_id === -1)) {
-        ev.preventDefault(); // allow drop from palanquee to dive
-        console.log("removing from "+data[0]);
+        ev.preventDefault(); // allow removing from dive group to dive
         removeFromPalanquee(data[1]).then(() => location.reload()).catch(r => displayError(r));
     }
     else if ((data[0] !== -1) && (target_id !== -1)) {
-        console.log("moving to "+target_id);
         moveBetweenPalanquees(data[1], data[0], target_id).then(() => location.reload()).catch(r => displayError(r));
     }
 }
 
+/**
+ * Adds a member to a dive group.
+ * @param {number} adherent_id - The ID of the member to add.
+ * @param {number} palanquee_id - The ID of the dive group to add the member to.
+ * @returns {Promise} - A promise resolved when the request is successful, rejected with an error message otherwise.
+ */
 async function addToPalanquee(adherent_id, palanquee_id) {
     const res = await fetch("/api/palanquees/" + palanquee_id + "/membres", {
         method: "POST",
@@ -82,6 +90,11 @@ async function addToPalanquee(adherent_id, palanquee_id) {
     }
 }
 
+/**
+ * Removes a member from a dive group.
+ * @param {number} member_id - The ID of the member to remove.
+ * @returns {Promise} - A promise resolved when the request is successful, rejected with an error message otherwise.
+ */
 async function removeFromPalanquee(member_id) {
     const res = await fetch("/api/palanquees/membres/" + member_id, {
         method: "DELETE",
@@ -95,6 +108,13 @@ async function removeFromPalanquee(member_id) {
     }
 }
 
+/**
+ * Moves a member between dive groups.
+ * @param {number} member_id - The ID of the member to move.
+ * @param {number} fromPalanquee_id - The ID of the original dive group of the member.
+ * @param {number} toPalanquee_id - The ID of the destination dive group of the member.
+ * @returns {Promise} - A promise resolved when the request is successful, rejected with an error message otherwise.
+ */
 async function moveBetweenPalanquees(member_id, fromPalanquee_id, toPalanquee_id) {
     const res = await fetch("/api/palanquees/membres/" + member_id, {
         method: "PUT",
@@ -109,6 +129,10 @@ async function moveBetweenPalanquees(member_id, fromPalanquee_id, toPalanquee_id
     }
 }
 
+/**
+ * Displays an error.
+ * @param {Object} json_error - The JSON object representing the error.
+ */
 function displayError(json_error) {
-    console.log(json_error); // TODO
+    console.log(json_error); // TODO: Handle error display appropriately
 }

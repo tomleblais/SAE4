@@ -72,6 +72,7 @@ class Lieu extends Model
         return $this->LIE_libelle;
     }
 
+    /** Gets the description to display when selecting in views. */
     public static function active() {
         return Lieu::all()->where('LIE_active', '1');
     }

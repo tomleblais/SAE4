@@ -70,6 +70,9 @@ class Niveau extends Model
 
     // Relationships
 
+    /** Gets the adherents that have this level.
+     * @return HasMany
+     */
     public function adherents(): HasMany
     {
         return $this->hasMany(Adherent::class, "ADH_niveau");

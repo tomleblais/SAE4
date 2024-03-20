@@ -1,54 +1,4 @@
 <!-- The dives management form -->
-@php
-    use App\Models\Personne;use App\Models\Plongee;use Illuminate\Database\Eloquent\Collection;use Illuminate\Support\Facades\DB;
-
-    /** @var string $displayMonth */
-    /** @var string $sortOrder */
-    /** @var bool $sortDir */
-    /** @var bool $actives */
-
-    if ($displayMonth == 'cur') $displayMonth = now()->month;
-
-    session()->put([
-            'actives' => $actives?'true':'false',
-            'mois' => $displayMonth,
-            'order' => $sortOrder,
-            'dir' => $sortDir?'true':'false'
-            ]);
-
-    function getSortLink(string $title, string $field, string $order, bool $act, bool $dir) : string {
-        if ($field === $order){
-            return "&nbsp;<a href='?actives=".($act?'true':'false')."&order=$field&dir=".($dir?'false':'true')
-                    ."'>$title &nbsp ".($dir?'v':'^')."</a>";
-        } else {
-            return "&nbsp;<a href='?actives=".($act?'true':'false')."&order=$field&dir=false'>$title &nbsp -</a>";
-        }
-    }
-    /** @var Personne $user */
-    $req = Plongee::with(['lieu', 'niveau', 'moment',
-        'participants'])->where('PLO_active',$actives)->orderBy('PLO_date')->orderBy('PLO_moment');
-    if (! $user->isDirector() && ! $user->isSecretary())
-        $req->where('PLO_directeur', $user->PER_id);
-    if ($displayMonth != 'tous')
-        $req->whereMonth('PLO_date', $displayMonth);
-
-    /** @var Collection|Plongee[] $dives */
-    $dives = $req->get();
-    switch ($sortOrder) {
-        case 'date' : if ($sortDir) $dives = $dives->reverse() ;break;
-        case 'lieu' : $dives = $dives->sortBy('lieu.LIE_libelle', SORT_NATURAL, $sortDir); break;
-        case 'niveau' : $dives = $dives->sortBy('niveau.NIV_niveau', SORT_NATURAL, $sortDir); break;
-        case 'effectif' : $dives = $dives->sortBy(function ($v, $k)
-                { return $v->participants->count(); }, SORT_NATURAL, $sortDir); break;
-        case 'etat' : $dives = $dives->sortBy('PLO_etat', SORT_NATURAL, $sortDir);
-    }
-
-    $names=['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre'
-            , 'décembre'];
-    $usedMonths = DB::select("SELECT distinct month(PLO_date) as month
-             FROM PLO_PLONGEES WHERE PLO_active = :act
-             ORDER BY month", ['act'=>$actives?1:0]);
-@endphp
 <x-page ariane="Accueil-Gestion des plongées">
     <form method="post" class="w3-padding">@csrf
         <input type="hidden" name="order" value="{{$sortOrder}}">
@@ -93,35 +43,24 @@
            style="width: 80%; margin-left: auto; margin-right: auto; padding: 8px">
         <thead class="w3-lime">
         <tr>
-            <th>{!! getSortLink('Date', 'date', $sortOrder, $actives, $sortDir) !!}</th>
-            <th>{!! getSortLink('Site', 'lieu', $sortOrder, $actives, $sortDir) !!}</th>
-            <th class="w3-center">{!! getSortLink('Niveau requis', 'niveau', $sortOrder, $actives, $sortDir) !!}</th>
-            <th class="w3-center">{!! getSortLink('Effectif', 'effectif', $sortOrder, $actives, $sortDir) !!}</th>
-            <th class="w3-center">{!! getSortLink('État', 'etat', $sortOrder, $actives, $sortDir) !!}</th>
+            <th>{!! $instance::getSortLink('Date', 'date', $sortOrder, $actives, $sortDir) !!}</th>
+            <th>{!! $instance::getSortLink('Site', 'lieu', $sortOrder, $actives, $sortDir) !!}</th>
+            <th class="w3-center">{!! $instance::getSortLink('Niveau requis', 'niveau', $sortOrder, $actives, $sortDir) !!}</th>
+            <th class="w3-center">{!! $instance::getSortLink('Effectif', 'effectif', $sortOrder, $actives, $sortDir) !!}</th>
+            <th class="w3-center">{!! $instance::getSortLink('État', 'etat', $sortOrder, $actives, $sortDir) !!}</th>
         </tr>
         </thead>
         <tbody>
         @foreach($dives as $dive)
-            @php
-            $color="";
-            if ($dive->isCancelled()) {
-                $color = 'w3-blue-gray';
-            } elseif ($dive->isLocked()) {
-                $color = 'w3-purple';
-            } else {
-                $nbFree = $dive->nbFreeSlots();
-                if ($nbFree <= 0)
-                    $color = 'w3-red';
-                elseif ($nbFree<=5)
-                    $color = 'w3-yellow';
-                else
-                    $color = 'w3-green';
-            }
-            @endphp
-            <tr class="{{$color}}">
+            <tr class="{{$instance->whatTheColor($dive)}}">
                 <td><a href="/plongees/{{$dive->PLO_id}}/editer">
                         {{$dive->PLO_date->format('d/m/Y')}} ({{$dive->moment->MOM_libelle}})
                     </a></td>
+                @else
+                <td><a>
+                        {{$dive->PLO_date->format('d/m/Y')}} ({{$dive->moment->MOM_libelle}})
+                    </a></td>
+                @endif
                 <td class="w3-tooltip">{{$dive->lieu->LIE_libelle}}
                     <span style="position:absolute;left:0;top:18px"
                           class="w3-text w3-tag w3-animate-opacity w3-round-xlarge">

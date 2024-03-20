@@ -58,6 +58,12 @@ class Bateau extends Model
         'BAT_active' => 'boolean'
     ];
 
+    /**
+     * Retrieve all models from the database.
+     *
+     * @param  array  $columns
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
     public function toArray(): array
     {
         return [
@@ -77,7 +83,8 @@ class Bateau extends Model
     public function getText() : string {
         return $this->BAT_libelle;
     }
-
+    
+    /** Gets the description to display when selecting in views. */
     public static function active() {
         return Bateau::all()->where('BAT_active', '1');
     }

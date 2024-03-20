@@ -11,3 +11,8 @@
         @endforeach
     </select>
 </label>
+@error($name)
+<div class="w3-panel w3-pale-red w3-leftbar w3-border-red">
+    <p>{{ $message }}</p>
+</div>
+@enderror

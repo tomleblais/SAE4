@@ -25,11 +25,12 @@ class Etat extends Model
     /** @var Etat[] $states */
     private static array $states = [];
 
+    /** Gets all the states */
     public static function find(int $id) : Etat {
         if (isEmpty(Etat::$states))
             foreach (Etat::all() as $state)
                 Etat::$states[] = $state;
-        return Etat::$states[$id];
+        return Etat::$states[$id-1];
     }
 
     /**

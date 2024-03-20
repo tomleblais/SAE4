@@ -43,6 +43,14 @@ class Autorisations extends Model
      */
     public $timestamps = false;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['AUT_directeur_section', 'AUT_securite_surface', 'AUT_pilote', 'AUT_secretaire'];
+
+
     public function toArray(): array
     {
         return [
@@ -66,6 +74,11 @@ class Autorisations extends Model
         'AUT_secretaire' => 'boolean',
     ];
 
+    /**
+     * Get the personne that owns the Autorisations
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function personne(): BelongsTo
     {
         return $this->belongsTo( Personne::class, "AUT_personne", 'PER_id');

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+
 /** Stores a given dive.
  * @property int $PLO_id
  * @property int $PLO_lieu
@@ -51,6 +52,17 @@ class Plongee extends Model
      * @var string
      */
     protected $table = 'PLO_PLONGEES';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'PLO_active',
+        'PLO_etat'
+    ];
+
 
     /**
      * The primary key associated with the table.
@@ -126,51 +138,93 @@ class Plongee extends Model
         'PLO_date' => 'date'
     ];
 
+    // Relationships
+
+    /** Get the boat of this dive.
+     * 
+     * @return BelongsTo
+     */
     public function bateau(): BelongsTo
     {
         return $this->belongsTo(Bateau::class, "PLO_bateau", "BAT_id");
     }
 
+    /** Get the state of this dive.
+     * 
+     * @return BelongsTo
+     */
     public function etat(): BelongsTo
     {
         return $this->belongsTo(Etat::class, "PLO_etat", "ETA_id");
     }
 
+    /** Get the location of this dive.
+     * 
+     * @return BelongsTo
+     */
     public function lieu(): BelongsTo
     {
         return $this->belongsTo(Lieu::class, "PLO_lieu", "LIE_id");
     }
 
+    /** Get the moment of this dive.
+     * 
+     * @return BelongsTo
+     */
     public function moment(): BelongsTo
     {
         return $this->belongsTo(Moment::class, "PLO_moment", "MOM_id");
     }
 
+    /** Get the minimum level of this dive.
+     * 
+     * @return BelongsTo
+     */
     public function niveau(): BelongsTo
     {
         return $this->belongsTo(Niveau::class, "PLO_niveau", "NIV_id");
     }
 
+    /** Get the participants of this dive.
+     * 
+     * @return HasManyThrough
+     */
     public function participants(): HasManyThrough
     {
         return $this->hasManyThrough(Adherent::class, Participe::class, 'PAR_plongee', 'ADH_id', 'PLO_id', 'PAR_adherent');
     }
 
+    /** Get the palanquees of this dive.
+     * 
+     * @return HasMany
+     */
     public function palanquees(): HasMany
     {
         return $this->hasMany(Palanquee::class, "PAL_plongee", 'PLO_id');
     }
 
+    /** Get the pilot of this dive.
+     * 
+     * @return HasOne
+     */
     public function pilote(): HasOne
     {
         return $this->hasOne(Personne::class, 'PER_id', 'PLO_pilote');
     }
 
+    /** Get the surface security of this dive.
+     * 
+     * @return HasOne
+     */
     public function securite(): HasOne
     {
         return $this->hasOne(Personne::class, 'PER_id', 'PLO_securite');
     }
 
+    /** Get the dive director of this dive.
+     * 
+     * @return HasOne
+     */
     public function directeur(): HasOne
     {
         return $this->hasOne(Adherent::class, 'ADH_id', 'PLO_directeur');
@@ -184,14 +238,42 @@ class Plongee extends Model
         return $this->PLO_date->format('Y-m-d');
     }
 
+    /**
+     * @return bool
+     */
     public function isCancelled() : bool {
-        return false;
+        return $this->PLO_etat == 5;
     }
 
+    /**
+     * @return bool
+     */
     public function isLocked() : bool {
         return $this->PLO_etat > Etat::$PARAMETERIZED;
     }
 
+    public function isPast(): bool {
+        $diveDate = \DateTime::createFromFormat('Y-m-d', $this->PLO_date->format('Y-m-d'));
+        $currentDate = new \DateTime();
+
+        if ($diveDate < $currentDate) {
+            $difference = $currentDate->diff($diveDate);
+
+            if ($difference->y >= 1) {
+                $this->update(['PLO_etat' => 4]);
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+
+    /**
+     * @return int
+     */
     public function nbFreeSlots() : int {
         return $this->PLO_max_plongeurs - $this->participants()->count();
     }
