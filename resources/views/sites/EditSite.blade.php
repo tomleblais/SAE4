@@ -1,7 +1,4 @@
 <!-- The site edition screen -->
-@php
-    $active = \App\Models\Lieu::find(old('id'))->LIE_active;
-@endphp
 <x-form heading="Modification de site{{$active?'':' inactif'}}" action="/api/lieux/{{ old('id') }}" button="Modifier"
         ariane="Accueil-Sites-Modification">
     @method("PUT")

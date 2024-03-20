@@ -1,38 +1,6 @@
 <!-- The adherents-list screen -->
 @php
-    use App\Models\Adherent;
-
-    /** @var bool $actives */
-    /** @var bool $sortDir */
-    /** @var string $sortOrder */
-
-   session()->put([
-            'aActives' => $actives?'true':'false',
-            'aOrder' => $sortOrder,
-            'aDir' => $sortDir?'true':'false'
-            ]);
-
-    $data = Adherent::with(['personne','niveau'])
-        ->whereHas('personne', function ($query) use ($actives) {
-            $query->where('PER_active', $actives);})->get()
-        ->sortBy(['personne.PER_nom','personne.PER_prenom']);
-
-    function getSortLink(string $title, string $field, string $order, bool $act, bool $dir) : string {
-        if ($field === $order){
-            return "&nbsp;<a href='?actives=".($act?'true':'false')."&order=$field&dir=".($dir?'false':'true')
-                    ."'>$title &nbsp ".($dir?'v':'^')."</a>";
-        } else {
-            return "&nbsp;<a href='?actives=".($act?'true':'false')."&order=$field&dir=false'>$title &nbsp -</a>";
-        }
-    }
-
-    switch ($sortOrder) {
-        case 'nom' : $data = $data->sortBy('personne.PER_nom', SORT_NATURAL, $sortDir); break;
-        case 'prenom' : $data = $data->sortBy('personne.PER_prenom', SORT_NATURAL, $sortDir); break;
-        case 'email' : $data = $data->sortBy('personne.PER_email', SORT_NATURAL, $sortDir); break;
-        case 'niveau' : $data = $data->sortBy('ADH_niveau', SORT_NATURAL, $sortDir); break;
-        case 'forfait' : $data = $data->sortBy('ADH_forfait', SORT_NATURAL, $sortDir); break;
-    }
+    use App\Http\Controllers\PlongeesController;
 @endphp
 <x-page ariane="Accueil-Adhérents">
     <form method="post" class="w3-padding">
@@ -49,11 +17,11 @@
     <table class="w3-table-all" style="table-layout: auto">
         <thead>
         <tr>
-            <th>{!! getSortLink('Nom', 'nom', $sortOrder, $actives, $sortDir) !!}</th>
-            <th>{!! getSortLink('Prénom', 'prenom', $sortOrder, $actives, $sortDir) !!}</th>
-            <th>{!! getSortLink('Email', 'email', $sortOrder, $actives, $sortDir) !!}</th>
-            <th class="w3-center" style="width: 7em">{!! getSortLink('Niveau', 'niveau', $sortOrder, $actives, $sortDir) !!}</th>
-            <th class="w3-center" style="width: 7em">{!! getSortLink('Forfait', 'forfait', $sortOrder, $actives, $sortDir) !!}</th>
+            <th>{!! PlongeesController::getSortLink('Nom', 'nom', $sortOrder, $actives, $sortDir) !!}</th>
+            <th>{!! PlongeesController::getSortLink('Prénom', 'prenom', $sortOrder, $actives, $sortDir) !!}</th>
+            <th>{!! PlongeesController::getSortLink('Email', 'email', $sortOrder, $actives, $sortDir) !!}</th>
+            <th class="w3-center" style="width: 7em">{!! PlongeesController::getSortLink('Niveau', 'niveau', $sortOrder, $actives, $sortDir) !!}</th>
+            <th class="w3-center" style="width: 7em">{!! PlongeesController::getSortLink('Forfait', 'forfait', $sortOrder, $actives, $sortDir) !!}</th>
         </tr>
         </thead>
         <tbody>

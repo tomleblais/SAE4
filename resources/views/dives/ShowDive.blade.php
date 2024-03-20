@@ -1,12 +1,9 @@
 <!-- The dive-detail screen -->
 @php
-    use App\Models\Palanquee;
-    use App\Models\Adherent;
-    use App\Models\Plongee;use Illuminate\Support\Facades\DB;
+    use App\Http\Controllers\PlongeesController;
     assert(isset($plongee));
     /** @var Plongee $dive */
-    $dive = Plongee::with('niveau', 'bateau', 'moment', 'lieu', 'etat',
-    'palanquees.members.adherent', 'participants.niveau')->find($plongee);
+    
 @endphp
 <x-page ariane="Accueil-Gestion des plongées-Configuration">
     <h1 class="w3-center"> Plongée du {{$dive->PLO_date}} {{$dive->moment->MOM_libelle}} ({{$dive->lieu->LIE_libelle}}
@@ -29,15 +26,9 @@
             <h3>Participants :</h3>
             Entre {{$dive->PLO_min_plongeurs}} et {{$dive->PLO_max_plongeurs}} plongeurs.
             <ul class="w3-ul w3-row">
-                @php
-                    $participants = $dive->participants()->with('personne', 'niveau')->orderBy("ADH_niveau")->get();
-                @endphp
+                
                 @foreach($participants as /**@var Adherent $adherent*/ $adherent)
-                    @if (empty(DB::select(
-                        "SELECT INC_id FROM PLO_INCLUT
-                         JOIN PLO_PALANQUEES ON INC_palanquee=PAL_id
-                         WHERE PAL_plongee=:plongee AND INC_adherent=:adherent",
-                         ['plongee'=>$dive->PLO_id, 'adherent'=>$adherent->ADH_id])))
+                    @if ( PlongeesController::isEmpty($dive,$adherent)  )
                         <li draggable="{{$dive->isLocked()?'false':'true'}}"
                             ondragstart="drag(event, -1, {{$adherent->ADH_id}})" class="w3-col s12 m6 l3"
                             style="cursor: grab">

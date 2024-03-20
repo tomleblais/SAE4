@@ -119,6 +119,7 @@ class PalanqueesController extends Controller
             default: return Response()->make("La plongée est déjà validée.", ResponseAlias::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    
 
     /**
      * Update the specified resource in storage.

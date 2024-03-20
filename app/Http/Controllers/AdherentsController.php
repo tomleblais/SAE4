@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Adherent;
 use App\Models\Personne;
+use App\Models\Niveau;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -133,6 +134,48 @@ class AdherentsController extends Controller
     public function edit(Adherent $adherent): RedirectResponse
     {
         return Response()->redirectToRoute("/adherents/".$adherent->ADH_id."/edition");
+    }
+    /**
+     * Display the correct view with the data.
+     *
+     * @param Adherent $adherent who have to be edited
+     * @return EditAdherent.blade.php view
+     */
+    public function editView(\App\Models\Adherent $id)
+    {
+        $active = Personne::All()->find($id)->PER_active;
+        $levels = Niveau::all();
+        return view("people/EditAdherent",["active" => $active,"levels" =>$levels ]);
+    }
+    public function listView(Request $request){
+        $actives = $request->input('actives', session('aActive', 'true'))!='false';
+        $sortOrder = $request->input('order', session('aOrder', 'nom'));
+        $sortDir = $request->input('dir', session('aDir', 'false')) != 'false';
+        session()->put([
+            'aActives' => $actives?'true':'false',
+            'aOrder' => $sortOrder,
+            'aDir' => $sortDir?'true':'false'
+            ]);
+
+        $data = Adherent::with(['personne','niveau'])
+            ->whereHas('personne', function ($query) use ($actives) {
+                $query->where('PER_active', $actives);})->get()
+            ->sortBy(['personne.PER_nom','personne.PER_prenom']);
+
+        switch ($sortOrder) {
+            case 'nom' : $data = $data->sortBy('personne.PER_nom', SORT_NATURAL, $sortDir); break;
+            case 'prenom' : $data = $data->sortBy('personne.PER_prenom', SORT_NATURAL, $sortDir); break;
+            case 'email' : $data = $data->sortBy('personne.PER_email', SORT_NATURAL, $sortDir); break;
+            case 'niveau' : $data = $data->sortBy('ADH_niveau', SORT_NATURAL, $sortDir); break;
+            case 'forfait' : $data = $data->sortBy('ADH_forfait', SORT_NATURAL, $sortDir); break;
+        }
+
+        return view("/people/ListAdherents", [
+            'actives' => $actives,
+            'sortOrder' => $sortOrder,
+            'sortDir' => $sortDir,
+            'data' => $data
+        ]);
     }
 
     /**

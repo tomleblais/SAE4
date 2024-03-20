@@ -43,6 +43,7 @@ class BateauxController extends Controller
     {
         return Response()->json(($bateau));
     }
+   
 
     /**
      * Show the form for creating a new resource.
@@ -87,6 +88,21 @@ class BateauxController extends Controller
     {
         return Response()->redirectToRoute("/bateaux/".$bateau->BAT_id."/edition");
     }
+    public function editView(\App\Models\Bateau $id)
+    {
+        $active = \App\Models\Bateau::All()->find($id)->BAT_active;
+        return view("ships/EditShip",["active" => $active]);
+    }
+    public function listView(){
+        if (!isset($actives))
+            $actives = true;
+        $data = Bateau::where('BAT_active', $actives)->get();
+        return view("ships/ListShips", [
+            'actives' => $actives,
+            'data' => $data
+        ]);
+    }
+
 
     /**
      * Update the specified resource in storage.

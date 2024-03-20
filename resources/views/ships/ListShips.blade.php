@@ -1,9 +1,4 @@
 <!-- The list of ships screen -->
-@php
-    use App\Models\Bateau;
-    if (!isset($actives))
-        $actives = true;
-@endphp
 <x-page ariane="Accueil-Bateaux">
     <form method="post" class="w3-padding">@csrf
         <h1 class="w3-center">
@@ -37,7 +32,7 @@
         </tr>
         </thead>
         <tbody>
-        @foreach(Bateau::where('BAT_active', $actives)->get() as $ship)
+        @foreach($data as $ship)
             <tr>
                 <td><a href="/bateaux/{{$ship->BAT_id}}/editer"> {{$ship->BAT_libelle}} </a></td>
                 <td>{{$ship->BAT_max_personnes}}</td>
