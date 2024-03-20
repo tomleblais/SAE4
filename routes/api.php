@@ -52,27 +52,27 @@ use App\Http\Middleware\RedirectIfAuthenticated;
 // });
 
 Route::get('/token/create', function (Request $request) {
-    $token = $request->user()->createToken('token', ['get', 'post']);
+    $token = $request->user()->createToken('token', ['delete', 'put']);
     return ['token' => $token->plainTextToken];
 });
 
-Route::get('/token/test', function(Request $request){
-    $can= false;
-    foreach($request->user()->tokens as $token) {
-        foreach($token->abilities as $ability) {
-            if($ability == 'post')
-                $can=true;
+Route::get('/token/test', function (Request $request) {
+    $can = false;
+    foreach ($request->user()->tokens as $token) {
+        foreach ($token->abilities as $ability) {
+            if ($ability == 'post')
+                $can = true;
         }
     }
     return $can;
 })->middleware(['auth:sanctum', 'ability:get']);
 
-Route::middleware('ability:post')->get('/token/test2', function(){
+Route::middleware('ability:post')->get('/token/test2', function () {
     dd("test");
 });
 
 Route::get('/token/delete', function (Request $request) {
-    $user= $request->user();
+    $user = $request->user();
     if (!is_null($user)) {
         $user->tokens()->delete();
         return redirect("/accueil");
@@ -80,146 +80,142 @@ Route::get('/token/delete', function (Request $request) {
     return redirect("/connexion");
 });
 
-Route::middleware(['auth:sanctum', 'ability:get'], function () {
-    Route::get("niveaux", [NiveauxController::class, 'index']); //Unit test
-    Route::get("niveaux/{id}", function (Niveau $id) { ///Unit test
-        return (new NiveauxController())->show($id);
-    });
-    Route::get("niveaux/{id}/adherents", function (Niveau $id) { //Unit test
-        return (new NiveauxController())->showAdherents($id);
-    });
+Route::get("niveaux", [NiveauxController::class, 'index']); //Unit test
+Route::get("niveaux/{id}", function (Niveau $id) { ///Unit test
+    return (new NiveauxController())->show($id);
+});
+Route::get("niveaux/{id}/adherents", function (Niveau $id) { //Unit test
+    return (new NiveauxController())->showAdherents($id);
+});
 
-    Route::get("moments", [MomentsController::class, 'index']); //Unit test
-    Route::get("moments/{id}", function (Moment $id) { //Unit test
-        return (new MomentsController())->show($id);
-    });
+Route::get("moments", [MomentsController::class, 'index']); //Unit test
+Route::get("moments/{id}", function (Moment $id) { //Unit test
+    return (new MomentsController())->show($id);
+});
 
-    Route::get("bateaux", [BateauxController::class, 'index']); //Unit test
-    Route::get("bateaux/inactifs", [BateauxController::class, 'indexInactive']); //Unit test
-    Route::get("bateaux/{id}", function (Bateau $id) { //Unit test
-        return (new BateauxController())->show($id);
-    });
+Route::get("bateaux", [BateauxController::class, 'index']); //Unit test
+Route::get("bateaux/inactifs", [BateauxController::class, 'indexInactive']); //Unit test
+Route::get("bateaux/{id}", function (Bateau $id) { //Unit test
+    return (new BateauxController())->show($id);
+});
 
 
-    Route::get("lieux", [LieuxController::class, 'index']); //Unit test
-    Route::get("lieux/inactifs", [LieuxController::class, 'indexInactive']); //Unit test
-    Route::get("lieux/{id}", function (Lieu $id) { //Unit test
-        return (new LieuxController())->show($id);
-    });
+Route::get("lieux", [LieuxController::class, 'index']); //Unit test
+Route::get("lieux/inactifs", [LieuxController::class, 'indexInactive']); //Unit test
+Route::get("lieux/{id}", function (Lieu $id) { //Unit test
+    return (new LieuxController())->show($id);
+});
 
-    Route::get("personnes", [PersonnesController::class, 'index']); //Unit test
-    Route::get("personnes/inactifs", [PersonnesController::class, 'indexInactive']); //Unit test
-    Route::get("personnes/{id}", function (Personne $id) { //Unit test
-        return (new PersonnesController())->show($id);
-    });
+Route::get("personnes", [PersonnesController::class, 'index']); //Unit test
+Route::get("personnes/inactifs", [PersonnesController::class, 'indexInactive']); //Unit test
+Route::get("personnes/{id}", function (Personne $id) { //Unit test
+    return (new PersonnesController())->show($id);
+});
 
-    Route::get("adherents", [AdherentsController::class, 'index']);  //Unit test
-    Route::get("adherents/inactifs", [AdherentsController::class, 'indexInactive']); //Unit test
-    Route::get("adherents/details", [AdherentsController::class, 'indexWithDetails']); //Unit test
-    Route::get("adherents/{id}", function (Adherent $id) { //Unit test
-        return (new AdherentsController())->show($id);
-    });
-    Route::get("adherents/{id}/details", function (Adherent $id) { //Unit test
-        return (new AdherentsController())->showWithDetails($id);
-    });
+Route::get("adherents", [AdherentsController::class, 'index']);  //Unit test
+Route::get("adherents/inactifs", [AdherentsController::class, 'indexInactive']); //Unit test
+Route::get("adherents/details", [AdherentsController::class, 'indexWithDetails']); //Unit test
+Route::get("adherents/{id}", function (Adherent $id) { //Unit test
+    return (new AdherentsController())->show($id);
+});
+Route::get("adherents/{id}/details", function (Adherent $id) { //Unit test
+    return (new AdherentsController())->showWithDetails($id);
+});
 
-    Route::get("plongees", [PlongeesController::class, 'index']);  //Unit test
-    Route::get("plongees/inactives", [PlongeesController::class, 'indexInactive']);  //Unit test
-    Route::get("plongees/details", [PlongeesController::class, 'indexWithDetails']);  //Unit test
-    Route::get("plongees/{id}", function (Plongee $id) {  //Unit test
-        return (new PlongeesController())->show($id);
-    });
-    Route::get("plongees/{id}/details", function (Plongee $id) {  //Unit test
-        return (new PlongeesController())->showWithDetails($id);
-    });
-    Route::get("plongees/{id}/participants", function (Plongee $id) { //Unit test
-        return (new plongeesController())->participants($id);
-    });
+Route::get("plongees", [PlongeesController::class, 'index']);  //Unit test
+Route::get("plongees/inactives", [PlongeesController::class, 'indexInactive']);  //Unit test
+Route::get("plongees/details", [PlongeesController::class, 'indexWithDetails']);  //Unit test
+Route::get("plongees/{id}", function (Plongee $id) {  //Unit test
+    return (new PlongeesController())->show($id);
+});
+Route::get("plongees/{id}/details", function (Plongee $id) {  //Unit test
+    return (new PlongeesController())->showWithDetails($id);
+});
+Route::get("plongees/{id}/participants", function (Plongee $id) { //Unit test
+    return (new plongeesController())->participants($id);
+});
 
-    Route::get("plongees/{id}/palanquees", function (Plongee $id) { //Unit test
-        return (new plongeesController())->palanquees($id);
-    });
+Route::get("plongees/{id}/palanquees", function (Plongee $id) { //Unit test
+    return (new plongeesController())->palanquees($id);
+});
 
-    Route::get("participants", [ParticipeController::class, 'index']); //Unit test
-    Route::get("participants/details", [ParticipeController::class, 'indexWithDetails']); //Unit test
-    Route::get("participants/{id}", function (Participe $id) { //Unit test
-        return (new ParticipeController())->show($id);
-    });
-    Route::get("participants/{id}/details", function (Participe $id) { //Unit test
-        return (new ParticipeController())->showWithDetails($id);
-    });
+Route::get("participants", [ParticipeController::class, 'index']); //Unit test
+Route::get("participants/details", [ParticipeController::class, 'indexWithDetails']); //Unit test
+Route::get("participants/{id}", function (Participe $id) { //Unit test
+    return (new ParticipeController())->show($id);
+});
+Route::get("participants/{id}/details", function (Participe $id) { //Unit test
+    return (new ParticipeController())->showWithDetails($id);
+});
 
-    Route::get("palanquees/membres/{id}", function (Inclut $id) { //Unit test
-        return (new InclutController())->show($id);
-    });
-    Route::get("palanquees/membres/{id}/details", function (Inclut $id) { //Unit test
-        return (new InclutController())->showWithDetails($id);
-    });
+Route::get("palanquees/membres/{id}", function (Inclut $id) { //Unit test
+    return (new InclutController())->show($id);
+});
+Route::get("palanquees/membres/{id}/details", function (Inclut $id) { //Unit test
+    return (new InclutController())->showWithDetails($id);
+});
 
-    Route::get("palanquees", [PalanqueesController::class, 'index']); //Unit test
-    Route::get("palanquees/details", [PalanqueesController::class, 'indexWithDetails']); //Unit test
-    Route::get("palanquees/{id}", function (Palanquee $id) { //Unit test
-        return (new PalanqueesController())->show($id);
-    });
-    Route::get("palanquees/{id}/details", function (Palanquee $id) { //Unit test
-        return (new PalanqueesController())->showWithDetails($id);
-    });
-    Route::get("palanquees/{id}/membres", function (Palanquee $id) { //Unit test
-        return (new PalanqueesController())->members($id);
-    });
-    Route::get("palanquees/{id}/membres/details", function (Palanquee $id) { //Unit test
-        return (new PalanqueesController())->membersWithDetails($id);
-    });
+Route::get("palanquees", [PalanqueesController::class, 'index']); //Unit test
+Route::get("palanquees/details", [PalanqueesController::class, 'indexWithDetails']); //Unit test
+Route::get("palanquees/{id}", function (Palanquee $id) { //Unit test
+    return (new PalanqueesController())->show($id);
+});
+Route::get("palanquees/{id}/details", function (Palanquee $id) { //Unit test
+    return (new PalanqueesController())->showWithDetails($id);
+});
+Route::get("palanquees/{id}/membres", function (Palanquee $id) { //Unit test
+    return (new PalanqueesController())->members($id);
+});
+Route::get("palanquees/{id}/membres/details", function (Palanquee $id) { //Unit test
+    return (new PalanqueesController())->membersWithDetails($id);
+});
 
-    Route::get("palanquees/membres/{id}", function (Inclut $id) { //Unit test
-        return (new InclutController())->show($id);
-    });
-    Route::get("palanquees/membres/{id}/details", function (Inclut $id) { //Unit test
-        return (new InclutController())->showWithDetails($id);
-    });
+Route::get("palanquees/membres/{id}", function (Inclut $id) { //Unit test
+    return (new InclutController())->show($id);
+});
+Route::get("palanquees/membres/{id}/details", function (Inclut $id) { //Unit test
+    return (new InclutController())->showWithDetails($id);
+});
 
-    /* No use (get all members of all palanquees) - deactivated
+/* No use (get all members of all palanquees) - deactivated
     Route::get("palanquees/membres", [InclutController::class, 'index']); //tested manually
     Route::get("palanquees/membres/details", [InclutController::class, 'indexWithDetails']); //tested manually
     */
+
+Route::post("bateaux", function (Request $request) { //Unit test
+    return (new BateauxController())->store($request);
 });
 
-Route::middleware(['auth:sanctum', 'ability:post'], function () {
-    Route::post("bateaux", function (Request $request) { //Unit test
-        return (new BateauxController())->store($request);
-    });
+Route::post("lieux", function (Request $request) { //Unit test
+    return (new LieuxController())->store($request);
+});
 
-    Route::post("lieux", function (Request $request) { //Unit test
-        return (new LieuxController())->store($request);
-    });
+Route::post("personnes", function (Request $request) { //Unit test
+    return (new PersonnesController())->store($request);
+});
 
-    Route::post("personnes", function (Request $request) { //Unit test
-        return (new PersonnesController())->store($request);
-    });
+Route::post("adherents", function (Request $request) { //Unit test
+    return (new AdherentsController())->store($request);
+});
 
-    Route::post("adherents", function (Request $request) { //Unit test
-        return (new AdherentsController())->store($request);
-    });
+Route::post("plongees/{id}/palanquees", function (Request $request, Plongee $id) { //Unit test
+    return (new PalanqueesController())->store($request, $id);
+});
+Route::post("plongees", function (Request $request) {  //Unit test
+    return (new PlongeesController())->store($request);
+});
 
-    Route::post("plongees/{id}/palanquees", function (Request $request, Plongee $id) { //Unit test
-        return (new PalanqueesController())->store($request, $id);
-    });
-    Route::post("plongees", function (Request $request) {  //Unit test
-        return (new PlongeesController())->store($request);
-    });
+Route::post("participants", function (Request $request) { //Unit test
+    return (new ParticipeController())->store($request);
+});
 
-    Route::post("participants", function (Request $request) { //Unit test
-        return (new ParticipeController())->store($request);
-    });
+Route::post("palanquees/{id}/membres", function (Request $request, Palanquee $id) { //Unit test
+    return (new InclutController())->store($request, $id);
+});
 
-    Route::post("palanquees/{id}/membres", function (Request $request, Palanquee $id) { //Unit test
-        return (new InclutController())->store($request, $id);
-    });
-
-    Route::post('database/seed/{dives}/{divers}', function (int $dives, int $divers) {
-        \Database\Seeders\TestPlongeeSeeder::run($dives, $divers);
-        return Response()->make("Il y a maintenant " . Plongee::count('PLO_id') . " plongées dans la base", 200);
-    });
+Route::post('database/seed/{dives}/{divers}', function (int $dives, int $divers) {
+    \Database\Seeders\TestPlongeeSeeder::run($dives, $divers);
+    return Response()->make("Il y a maintenant " . Plongee::count('PLO_id') . " plongées dans la base", 200);
 });
 
 Route::middleware(['auth:sanctum', 'ability:put'], function () {
