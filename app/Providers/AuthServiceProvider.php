@@ -32,5 +32,12 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('directeur-section', function (Personne $person) {
             return $person->isDirector();
         });
+        Gate::define('delete', function ($user) {
+            return $user->isDirector() || $user->isSecretary();
+        });
+        
+        Gate::define('put', function ($user) {
+            return $user->isDirector() || $user->isSecretary();
+        });
     }
 }
