@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Autorisations;
 use App\Models\Personne;
+use App\Models\Niveau;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -50,7 +51,7 @@ class PersonnesController extends Controller
             $autorisations->save();
         }
     }
-
+    
     /**
      * Display a listing of the resource.
      *
@@ -90,6 +91,38 @@ class PersonnesController extends Controller
     public function create(): Response
     {
         return Response()->view('people/CreatePerson');
+    }
+
+    public function listView(Request $request){
+        $actives = $request->input('actives', session('pActive', 'true'))!='false';
+        $sortOrder = $request->input('order', session('pOrder', 'nom'));
+        $sortDir = $request->input('dir', session('pDir', 'false')) != 'false';
+        session()->put([
+            'pActives' => $actives?'true':'false',
+            'pOrder' => $sortOrder,
+            'pDir' => $sortDir?'true':'false'
+            ]);
+
+        $data = Personne::with('autorisations')->where('PER_active', $actives)->orderBy('PER_nom')
+            ->orderBy('PER_prenom')->get();
+        switch ($sortOrder) {
+            case 'nom' : $data = $data->sortBy('PER_nom', SORT_NATURAL, $sortDir); break;
+            case 'prenom' : $data = $data->sortBy('PER_prenom', SORT_NATURAL, $sortDir); break;
+            case 'email' : $data = $data->sortBy('PER_email', SORT_NATURAL, $sortDir); break;
+            case 'directeur' : $data = $data->sortBy('autorisations.AUT_directeur_section', SORT_NATURAL, $sortDir); break;
+            case 'secretaire' : $data = $data->sortBy('autorisations.AUT_secretaire', SORT_NATURAL, $sortDir); break;
+            case 'securite' : $data = $data->sortBy('autorisations.AUT_securite_surface', SORT_NATURAL, $sortDir); break;
+            case 'pilote' : $data = $data->sortBy('autorisations.AUT_pilote', SORT_NATURAL, $sortDir); break;
+            case 'adherent' : $data = $data->sortBy(function ($v, $k)
+                    {return $v->isAdherent();}, SORT_NATURAL, $sortDir); break;
+        }
+
+        return view("/people/ListPeople", [
+            'actives' => $actives,
+            'sortOrder' => $sortOrder,
+            'sortDir' => $sortDir,
+            'data' => $data
+            ]);
     }
 
     /**
@@ -142,6 +175,12 @@ class PersonnesController extends Controller
         $data = $this->validateRequest($request, $id);
         $person = Personne::find($data['id']);
         return $this->doUpdate($data, $person, $request);
+    }
+    public function editView(\App\Models\Personne $id)
+    {
+        $active = Personne::All()->find($id)->PER_active;
+        $isAdherent =Personne::All()->find($id)->isAdherent();
+        return view("people/EditPerson",["active" => $active,"isAdherent" =>$isAdherent]);
     }
 
     /**

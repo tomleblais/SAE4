@@ -1,9 +1,18 @@
 <?php
 
 use App\Models\Plongee;
+use App\Models\Personne;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use \App\Http\Controllers\AdherentsController;
+use \App\Http\Controllers\PersonnesController;
+use \App\Http\Controllers\BateauxController;
+use \App\Http\Controllers\LieuxController;
+use \App\Http\Controllers\PlongeesController;
+use App\Models\Palanquee;
+use App\Models\Adherent;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,22 +43,25 @@ Route::withoutMiddleware([\App\Http\Middleware\Authenticate::class])->group(func
 
 Route::view("/bateaux/creer", "ships/CreateShip")->can('admin', \App\Models\Bateau::class);
 Route::get("/bateaux/{id}/editer", function (\App\Models\Bateau $id) {
+    $controller = new BateauxController();
     if (session()->getOldInput('id') != $id->BAT_id) {
         session()->flashInput($id->toArray()); // sets old data
     }
-    return view("ships/EditShip");
+    return $controller->editView($id);
 })->can('admin', \App\Models\Bateau::class);
-Route::view("/bateaux", "/ships/ListShips")->can('admin', \App\Models\Bateau::class);
-Route::post("/bateaux", function (Request $request) {
-    return view("/ships/ListShips", ['actives' => $request->post('actives')!='false']);
+
+Route::match(['get', 'post'], '/bateaux', function(Request $request){
+    $controller = new BateauxController();
+    return $controller->listView($request);
 })->can('admin', \App\Models\Bateau::class);
 
 Route::view("/sites/creer", "sites/CreateSite")->can('admin', \App\Models\Lieu::class);
 Route::get("/sites/{id}/editer", function (\App\Models\Lieu $id) {
+    $controller = new LieuxController();
     if (session()->getOldInput('id') != $id->LIE_id) {
         session()->flashInput($id->toArray()); // sets old data
     }
-    return view("sites/EditSite");
+    return $controller->editView($id);
 })->can('admin', \App\Models\Lieu::class);
 Route::view("/sites", "/sites/ListSites")->can('admin', \App\Models\Lieu::class);
 Route::post("/sites", function (Request $request) {
@@ -64,27 +76,33 @@ Route::get("/adherents/changerMotDePasse", function () {
     }
     return view("people/changePassword");
 });
+// change 
+
 Route::get("/adherents/{id}/editer", function (\App\Models\Adherent $id) {
+    $controller = new AdherentsController();
     $id->load('personne');
     if (session()->getOldInput('licence') != $id->ADH_licence) {
         session()->flashInput($id->toArray()); // sets old data
     }
-    return view("people/EditAdherent");
+    return $controller->editView($id);
 })->can('secretary', \App\Models\Personne::class);
 
 Route::match(['get','post'], "/adherents", function (Request $request) {
-    return view("/people/ListAdherents", [
-        'actives' => $request->input('actives', session('aActive', 'true'))!='false',
-        'sortOrder' => $request->input('order', session('aOrder', 'nom')),
-        'sortDir' => $request->input('dir', session('aDir', 'false')) != 'false']);
+    $controller = new AdherentsController();
+    return $controller->listView($request);
 })->can('secretary', \App\Models\Personne::class);
 
-Route::view("/plongees/creer", "dives/CreateDive")->can('secretary', \App\Models\Personne::class);
+Route::get("/plongees/creer", function () {
+    $controller = new PlongeesController();
+    return $controller->createView();
+})->can('secretary', \App\Models\Personne::class);
+
 Route::get("/plongees/{id}/editer", function (\App\Models\Plongee $id) {
+    $controller = new PlongeesController();
     if (session()->getOldInput('id') != $id->PLO_id) {
         session()->flashInput($id->toArray()); // sets old data
     }
-    return view("dives/EditDive");
+    return $controller->editView($id);
 })->can('diveDirector', 'id');
 
 Route::match(['get','post'],"/plongees/inscriptions",function (Request $request) {
@@ -95,33 +113,34 @@ Route::match(['get','post'],"/plongees/inscriptions",function (Request $request)
 })->can('registerInDive', \App\Models\Personne::class);
 
 Route::get("/plongees/{id}", function (Plongee $id) {
-   return view('/dives/ShowDive', ['plongee' => $id->PLO_id]);
+    $controller = new PlongeesController();
+   return $controller->CreateGroup($id);
+   // view('/dives/ShowDive', ['plongee' => $id->PLO_id]);
 })->can('diveDirector', 'id');
 
+    
 Route::match(['get','post'],"/plongees",function (Request $request) {
-    return view("dives/manage", ['user' => Auth::user(),
-        'actives' => $request->input('actives', session('actives', 'true')) != 'false',
-        'displayMonth' => $request->input('mois', session('mois','cur')),
-        'sortOrder' => $request->input('order', session('order', 'date')),
-        'sortDir' => $request->input('dir', session('dir', 'false')) != 'false']);
+    $controller = new PlongeesController();
+    return $controller->listView($request);
 })->can('manageDives', \App\Models\Plongee::class)
-    ->middleware('cache.headers:private;no_cache;no_store'); //Reload on back-pressed
+    ->middleware('cache.headers:private;no_cache;no_store');
 
 Route::match(['get','post'], "/personnes", function (Request $request) {
-    return view("/people/ListPeople", [
-        'actives' => $request->input('actives', session('pActive', 'true'))!='false',
-        'sortOrder' => $request->input('order', session('pOrder', 'nom')),
-        'sortDir' => $request->input('dir', session('pDir', 'false')) != 'false'
-        ]);
+    $controller = new PersonnesController();
+    return $controller->listView($request);
 })->can('secretary', \App\Models\Personne::class);
 Route::view("/personnes/creer", "people/CreatePerson")->can('secretary', \App\Models\Personne::class);
+
 Route::get("/personnes/{id}", function (\App\Models\Personne $id) {
+    $controller = new PersonnesController();
     //if (session()->getOldInput('id') != $id->PER_id) {
         $id->load("autorisations");
         session()->flashInput($id->toArray()); // sets old data
     //}
-    return view("people/EditPerson");
+    return $controller->editView($id);//view("people/EditPerson");
 })->can('secretary', \App\Models\Personne::class);
+
+
 Route::get('/accueil', function (Request $request) {
     return view('home/dashboard');
 });

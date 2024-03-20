@@ -1,8 +1,3 @@
-@php
-    use App\Models\Personne;
-
-    $active = Personne::find(old('id'))->PER_active
-@endphp
 <x-form heading="Modifier une personne{{$active?'':' inactive'}}" action="/api/personnes/{{ old('id') }}"
         button="Modifier" ariane="Accueil-Personnes-Modification">
     @method("PUT")
@@ -37,7 +32,7 @@
         </div>
     </div>
     <x-slot name="otherButtons">
-        @if(! Personne::find(old('id'))->isAdherent())
+        @if(!$isAdherent)
             <input type="submit" name="becomeAdherent" class="w3-round-large"
                    style="padding: 16px; white-space: normal" value="Devenir Adhérent">
         @else
@@ -45,17 +40,13 @@
                style="padding: 16px; white-space: normal">Voir la page adhérent</a>
         @endif
         @if($active)
-            @if(! Personne::find(old('id'))->isLastDirector())
             <input type="submit" name="deletePerson" class="w3-round-large"
                    style="padding: 16px; white-space: normal" value="Supprimer" >
-                @endif
         @else
             <input type="submit" name="deletePerson" class="w3-round-large"
                    style="padding: 16px; white-space: normal" value="Supprimer définitivement" >
             <input type="submit" name="restorePerson" class="w3-round-large"
                    style="padding: 16px; white-space: normal" value="Restaurer" >
-
-
         @endif
     </x-slot>
 </x-form>

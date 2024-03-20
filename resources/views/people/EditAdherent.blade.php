@@ -1,10 +1,4 @@
 <!-- The person update form -->
-@php
-    use App\Models\Niveau;
-    use App\Models\Personne;
-
-    $active = Personne::find(old('id'))->PER_active;
-@endphp
 <x-form heading="Modifier un adhérent{{$active?'':' inactif'}}" action="/api/adherents/{{ old('id') }}"
         button="Modifier" ariane="Accueil-Adhérents-Modification">
     @method("PUT")
@@ -15,7 +9,7 @@
     <x-input type="date" name="date_certificat_medical" text="Date du certificat médical" />
     <x-input type="email" name="email" text="Adresse de Courriel" maxlength=100 />
     <x-input type="text" name="forfait" text="Forfait de plongée souscrit" maxlength=45 />
-    <x-select name="niveau" text="Niveau atteint" :collection="Niveau::all()"/>
+    <x-select name="niveau" text="Niveau atteint" :collection="$levels"/>
     <x-slot name="otherButtons">
         <a href="{{ url('/personnes', old('id')) }}" type="submit"
            class="w3-btn w3-round-large w3-border w3-light-grey"

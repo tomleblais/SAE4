@@ -1,7 +1,5 @@
 <!-- The ship edition form -->
-@php
-  $active = \App\Models\Bateau::find(old('id'))->BAT_active;
-@endphp
+
 <x-form heading="Modification de bateau{{$active?'':' inactif'}}" action="/api/bateaux/{{ old('id') }}"
         button="Modifier" ariane="Accueil-Bateaux-Modification">
     @method("PUT")
