@@ -53,6 +53,7 @@
         <tbody>
         @foreach($dives as $dive)
             <tr class="{{$instance->whatTheColor($dive)}}">
+                @if($dive->PLO_etat != 3 && $dive->PLO_etat != 4)
                 <td><a href="/plongees/{{$dive->PLO_id}}/editer">
                         {{$dive->PLO_date->format('d/m/Y')}} ({{$dive->moment->MOM_libelle}})
                     </a></td>

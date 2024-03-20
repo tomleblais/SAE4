@@ -41,6 +41,8 @@ class PlongeesController extends Controller
         return Response()->json(Plongee::where('PLO_active','1')->orderBy('PLO_date')->get());
     }
     public function whatTheColor(Plongee $dive){
+        $dive->isPast();
+            
         $color="";
         if ($dive->isCancelled()) {
             $color = 'w3-blue-gray';

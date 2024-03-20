@@ -316,4 +316,9 @@ class PersonnesController extends Controller
             throw new Exception("Invalid token");
         return $data;
     }
+
+    public static function lastDirector(int $id): bool
+    {   
+        return Personne::find($id)->isLastDirector();
+    }
 }

@@ -1,7 +1,4 @@
 <!-- The dive-edition form -->
-@php
-
-@endphp
 <x-form heading="Modifier une plongée{{$active?'':' inactive'}}" action="/api/plongees/{{ old('id') }}"
         ariane="Accueil-Gestion des plongées-Modification"
         button="Modifier">
@@ -29,4 +26,3 @@
         @endif
     </x-slot>
 </x-form>
-@endif

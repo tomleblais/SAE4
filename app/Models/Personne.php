@@ -143,7 +143,11 @@ class Personne extends Model implements Authenticatable
     }
 
     public function isLastDirector(): bool {
-        return Autorisations::where('AUT_directeur_section', 1)->count() === 1 && $this->isDirector();
+        return Autorisations::where('AUT_directeur_section', 1)->whereHas('personne', 
+            function (Builder $query) {
+                $query->where('PER_active', true);
+            }
+        )->count() === 1 && $this->isDirector();
     }
 
     /** Check if the person is a secretary. */

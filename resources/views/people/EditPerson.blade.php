@@ -1,3 +1,7 @@
+@php
+    use App\Http\Controllers\PersonnesController;
+@endphp
+
 <x-form heading="Modifier une personne{{$active?'':' inactive'}}" action="/api/personnes/{{ old('id') }}"
         button="Modifier" ariane="Accueil-Personnes-Modification">
     @method("PUT")
@@ -40,8 +44,10 @@
                style="padding: 16px; white-space: normal">Voir la page adhérent</a>
         @endif
         @if($active)
-            <input type="submit" name="deletePerson" class="w3-round-large"
-                   style="padding: 16px; white-space: normal" value="Supprimer" >
+            @if(!PersonnesController::lastDirector(old('id')))
+                <input type="submit" name="deletePerson" class="w3-round-large"
+                   style="padding: 16px; white-space: normal" value="Supprimer">
+            @endif        
         @else
             <input type="submit" name="deletePerson" class="w3-round-large"
                    style="padding: 16px; white-space: normal" value="Supprimer définitivement" >
