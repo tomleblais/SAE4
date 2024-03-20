@@ -216,6 +216,7 @@ class Plongee extends Model
             }
             return true;
         }
+
         return false;
     }
 
