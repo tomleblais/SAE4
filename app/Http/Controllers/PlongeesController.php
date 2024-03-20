@@ -7,7 +7,6 @@ use App\Models\Bateau;
 use App\Models\Inclut;
 use App\Models\Participe;
 use App\Models\Lieu;
-use App\Models\Bateau;
 use App\Models\Moment;
 use App\Models\Niveau;
 use App\Models\Personne;

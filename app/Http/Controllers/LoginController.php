@@ -50,7 +50,7 @@ class LoginController extends Controller
             $credentials['remember'] = false;
         if (Auth::attempt(['PER_email'=>$credentials['email'], 'password'=>$credentials['pass'], 'PER_active'=>1], $credentials['remember'])) {
             $request->session()->regenerate();
-            return redirect()->intended('/accueil');
+            return redirect('api/token/create');
         }
 
         return back()->withInput($credentials)->withErrors([
