@@ -15,7 +15,25 @@
     $directeurs = Adherent::with('personne')->whereHas('niveau', function ($query){
         $query->where('NIV_directeur', true);
     })->get();
+
+    // Récupérer l'ID de la plongée à éditer
+    $plongeeId = old('id');
+
+    // Vérifier le statut de la plongée
+    $plongee = Plongee::find($plongeeId);
+    $status = $plongee->PLO_etat;
+
+    // Si le statut est "Validée" (3), rediriger vers une page d'erreur
+    if ($status == 3) {
+        $errorMessage = 'Vous ne pouvez pas éditer une plongée validée.';
+    }
+
 @endphp
+@if(isset($errorMessage))
+    <div class="alert alert-danger" role="alert">
+        {{ $errorMessage }}
+    </div>
+@else
 <x-form heading="Modifier une plongée{{$active?'':' inactive'}}" action="/api/plongees/{{ old('id') }}"
         ariane="Accueil-Gestion des plongées-Modification"
         button="Modifier">
@@ -43,3 +61,4 @@
         @endif
     </x-slot>
 </x-form>
+@endif
