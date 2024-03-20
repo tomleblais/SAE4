@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Adherent;
 use App\Models\Inclut;
 use App\Models\Participe;
+use App\Models\Bateau;
 use App\Models\Plongee;
 use DateTime;
 use Exception;
@@ -119,7 +120,7 @@ class PlongeesController extends Controller
         $data = Validator::validate($request->all(), [
             'lieu' => 'required|numeric|exists:PLO_LIEUX,LIE_id',
             'bateau' => ['required','numeric','exists:PLO_BATEAUX,BAT_id',
-            function($attribute, $value, $fail){
+            function($attribute, $value, $fail) use ($request) {
                 $bateau = Bateau::find($value);
 
                 if($bateau && $bateau->BAT_max_personnes < $request->input('max_plongeurs')){
@@ -132,31 +133,43 @@ class PlongeesController extends Controller
             'min_plongeurs' => 'required|numeric|min:2',
             'max_plongeurs' => 'required|numeric|gte:min_plongeurs',
             'niveau' => 'required|numeric|exists:PLO_NIVEAUX,NIV_id',
-            'pilote' => ['required', 'numeric', 'exists:PLO_PERSONNES,PER_id',
-                'valid'=>Rule::exists('PLO_AUTORISATIONS', 'AUT_personne')->where('AUT_pilote', 1)
+            'pilote' => ['nullable', 'numeric', 'exists:PLO_PERSONNES,PER_id',
+                'valid'=>Rule::exists('PLO_AUTORISATIONS', 'AUT_personne')->where('AUT_pilote', 1),
+                'different' => function($attribute, $value, $fail) use ($request) {
+                    if($request->input('pilote') == $request->input('securite_de_surface') ||  
+                    $request->input('pilote') == $request->input('directeur_de_plongee')){
+                        $fail('Le pilote, la securite de surface et le directeur de plongee doivent être 3 personnes differentes');
+                    }
+                }
             ],
             'securite_de_surface' => ['required', 'numeric', 'exists:PLO_PERSONNES,PER_id',
                 'valid'=>Rule::exists('PLO_AUTORISATIONS', 'AUT_personne')
-                    ->where('AUT_securite_surface', 1)
+                    ->where('AUT_securite_surface', 1),
+                'different' => function($attribute, $value, $fail) use ($request) {
+                    if($request->input('securite_de_surface') == $request->input('pilote') ||  
+                    $request->input('securite_de_surface') == $request->input('directeur_de_plongee')){
+                        $fail('Le pilote, la securite de surface et le directeur de plongee doivent être 3 personnes differentes');
+                    }
+                }
             ],
             'directeur_de_plongee' => ['required', 'numeric', 'bail', 'exists:PLO_ADHERENTS,ADH_id',
                 'valid'=>function($attribute, $value, $fail) {
                     if (! Adherent::find($value)->niveau->NIV_directeur)
                         $fail('Le directeur de plongée doit être de niveau suffisant (E4).');
+                },
+                'different' => function($attribute, $value, $fail) use ($request) {
+                    if($request->input('directeur_de_plongee') == $request->input('securite_de_surface') ||  
+                    $request->input('directeur_de_plongee') == $request->input('pilote')){
+                        $fail('Le pilote, la securite de surface et le directeur de plongee doivent être 3 personnes differentes');
+                    }
                 }
             ],
         ], ['pilote.valid'=>"Le pilote doit être autorisé.",
             'securite_de_surface.valid' => 'La sécurité de surface doit être autorisée.',
             'directeur_de_plongee' => 'Le directeur de plongée doit être de niveau suffisant (E4).',
-            'differents' => 'Le pilote, la securité de surface et le directeur de plongee doivent être 3 personnes différentes'
-        ])->sometimes('pilote', 'differents', function($input){
-            return $input->pilote
-                && $input->securite_de_surface
-                && $input->directeur_de_plongee
-                && $input->pilote !== $input->securite_de_surface
-                && $input->pilote !== $input->directeur_de_plongee
-                && $input->securite_de_surface !== $input->directeur_de_plongee; 
-        });
+            'pilote.different' => 'Le pilote, la securité de surface et le directeur de plongee doivent être 3 personnes différentes'
+        ]);
+        
         $dive = new Plongee();
         $dive->PLO_lieu = $data['lieu'];
         $dive->PLO_bateau = $data['bateau'];
@@ -171,10 +184,12 @@ class PlongeesController extends Controller
         $dive->PLO_securite = $data['securite_de_surface'];
         $dive->PLO_directeur = $data['directeur_de_plongee'];
         $dive->save();
-        if ($request->wantsJson())
+
+        if ($request->wantsJson()) {
             return Response()->json($dive);
-        else
+        } else {
             return Response()->redirectTo($request->session()->previousUrl())->with(["result" => "Création réussie"]);
+        }
     }
 
     /**
@@ -316,7 +331,7 @@ class PlongeesController extends Controller
             'id' => 'required|numeric|exists:PLO_PLONGEES,PLO_id',
             'lieu' => 'nullable|numeric|exists:PLO_LIEUX,LIE_id',
             'bateau' => ['nullable','numeric','exists:PLO_BATEAUX,BAT_id',
-                function($attribute, $value, $fail){
+                function($attribute, $value, $fail) use ($request){
                     $bateau = Bateau::find($value);
 
                     if($bateau && $bateau->BAT_max_personnes < $request->input('max_plongeurs')){
@@ -330,7 +345,14 @@ class PlongeesController extends Controller
             'max_plongeurs' => 'nullable|numeric|gte:min_plongeurs',
             'niveau' => 'nullable|numeric|exists:PLO_NIVEAUX,NIV_id',
             'pilote' => ['nullable', 'numeric', 'exists:PLO_PERSONNES,PER_id',
-                'valid'=>Rule::exists('PLO_AUTORISATIONS', 'AUT_personne')->where('AUT_pilote', 1)
+                'valid'=>Rule::exists('PLO_AUTORISATIONS', 'AUT_personne')->where('AUT_pilote', 1),
+                'different' => function($attribute, $value, $fail) use ($request){
+                    if($request->input('pilote') == $request->input('securite_de_surfance') || 
+                    $request->input('securite_de_surfance') == $request->input('directeur_de_plongee') || 
+                    $request->input('pilote') == $request->input('directeur_de_plongee')){
+                        $fail('Le pilote, la securite de surface et le directeur de plongee doivent être 3 personnes differentes');
+                    }
+                }
             ],
             'securite_de_surface' => ['nullable', 'numeric', 'exists:PLO_PERSONNES,PER_id',
                 'valid'=>Rule::exists('PLO_AUTORISATIONS', 'AUT_personne')
@@ -346,15 +368,8 @@ class PlongeesController extends Controller
         ], ['pilote.valid'=>"Le pilote doit être autorisé.",
             'securite_de_surface.valid' => 'La sécurité de surface doit être autorisée.',
             'directeur_de_plongee.valid' => 'Le directeur de plongée doit être de niveau suffisant (E4)',
-            'differents' => 'Le pilote, la securite de surface et le directeur de plongee doivent être 3 personnes differentes'
-        ])->sometimes('pilote', 'differents', function($input){
-            return $input->pilote
-                && $input->securite_de_surface
-                && $input->directeur_de_plongee
-                && $input->pilote !== $input->securite_de_surface
-                && $input->pilote !== $input->directeur_de_plongee
-                && $input->securite_de_surface !== $input->directeur_de_plongee;
-        });
+            'pilote.different' => 'Le pilote, la securite de surface et le directeur de plongee doivent être 3 personnes differentes'
+        ]);
     }  
 
     /**
