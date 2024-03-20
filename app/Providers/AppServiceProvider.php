@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
         }
         //
         /* For debugging Eloquent requests */
-        if (false)
+        if (true)
             DB::listen(function ($query) {
                 Log::info("SQL=".$query->sql);
                 Log::info("BINDINGS=".print_r($query->bindings,true));

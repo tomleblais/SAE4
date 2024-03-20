@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Adherent;
+use App\Models\Bateau;
 use App\Models\Inclut;
 use App\Models\Participe;
 use App\Models\Lieu;
@@ -41,6 +42,8 @@ class PlongeesController extends Controller
         return Response()->json(Plongee::where('PLO_active','1')->orderBy('PLO_date')->get());
     }
     public function whatTheColor(Plongee $dive){
+        $dive->isPast();
+            
         $color="";
         if ($dive->isCancelled()) {
             $color = 'w3-blue-gray';
@@ -505,7 +508,20 @@ class PlongeesController extends Controller
             'moment' => 'nullable|numeric|exists:PLO_MOMENTS,MOM_id',
             'min_plongeurs' => 'nullable|numeric|min:2',
             'max_plongeurs' => 'nullable|numeric|gte:min_plongeurs',
-            'niveau' => 'nullable|numeric|exists:PLO_NIVEAUX,NIV_id',
+            'niveau' => [
+                'nullable',
+                'numeric',
+                'exists:PLO_NIVEAUX,NIV_id',
+                'valid' => function ($attribute, $value, $fail) use ($request) {
+                    $adherents = Plongee::where("PLO_id", $request->input("id"))
+                        ->join("PLO_participe", "PLO_plongees.PLO_id", "=", "PLO_participe.PAR_id")
+                        ->join("PLO_adherents", "PLO_participe.PAR_adherent", "=", "PLO_adherents.ADH_id")
+                        ->where("ADH_niveau", "<", $value)
+                        ->count();
+
+                    if ($adherents > 0)
+                        $fail("Il y a au moins un participant à un niveau trop bas pour monter le niveau de la plongée.");
+                }],
             'pilote' => ['nullable', 'numeric', 'exists:PLO_PERSONNES,PER_id',
                 'valid'=>Rule::exists('PLO_AUTORISATIONS', 'AUT_personne')->where('AUT_pilote', 1),
                 'different' => function($attribute, $value, $fail) use ($request){
@@ -527,12 +543,13 @@ class PlongeesController extends Controller
                 }
             ],
             'etat' => 'nullable|numeric|exists:PLO_ETATS,ETA_id',
-        ], ['pilote.valid'=>"Le pilote doit être autorisé.",
+        ], [
+            'pilote.valid'=>"Le pilote doit être autorisé.",
             'securite_de_surface.valid' => 'La sécurité de surface doit être autorisée.',
-            'directeur_de_plongee.valid' => 'Le directeur de plongée doit être de niveau suffisant (E4)',
-            'pilote.different' => 'Le pilote, la securite de surface et le directeur de plongee doivent être 3 personnes differentes'
+            'niveau.valid' => 'Il y a au moins un participant à un niveau trop bas pour monter le niveau de la plongée.',
+            'bateau.valid' => "Il n'y a pas assez de place sur le bateau."
         ]);
-    }  
+    }
 
     /**
      * @param Request $request
