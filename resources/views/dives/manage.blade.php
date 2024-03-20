@@ -116,11 +116,19 @@
                     else
                         $color = 'w3-green';
                 }
+                    $plongee = Plongee::find($dive->PLO_id);
+                    $status = $plongee->PLO_etat;
             @endphp
             <tr class="{{$color}}">
+                @if($status != 3)
                 <td><a href="/plongees/{{$dive->PLO_id}}/editer">
                         {{$dive->PLO_date->format('d/m/Y')}} ({{$dive->moment->MOM_libelle}})
                     </a></td>
+                @else
+                <td><a>
+                        {{$dive->PLO_date->format('d/m/Y')}} ({{$dive->moment->MOM_libelle}})
+                    </a></td>
+                @endif
                 <td class="w3-tooltip">{{$dive->lieu->LIE_libelle}}
                     <span style="position:absolute;left:0;top:18px"
                           class="w3-text w3-tag w3-animate-opacity w3-round-xlarge">

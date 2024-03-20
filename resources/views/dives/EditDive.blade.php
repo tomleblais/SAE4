@@ -28,12 +28,12 @@
         $errorMessage = 'Vous ne pouvez pas éditer une plongée validée.';
     }
 
-@endphp
-@if(isset($errorMessage))
-    <div class="alert alert-danger" role="alert">
-        {{ $errorMessage }}
-    </div>
-@else
+    @endphp
+    @if(isset($errorMessage))
+        <div class="alert alert-danger" role="alert">
+            {{ $errorMessage }}
+        </div>
+    @else
 <x-form heading="Modifier une plongée{{$active?'':' inactive'}}" action="/api/plongees/{{ old('id') }}"
         ariane="Accueil-Gestion des plongées-Modification"
         button="Modifier">
