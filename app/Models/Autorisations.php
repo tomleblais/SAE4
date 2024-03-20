@@ -74,6 +74,11 @@ class Autorisations extends Model
         'AUT_secretaire' => 'boolean',
     ];
 
+    /**
+     * Get the personne that owns the Autorisations
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function personne(): BelongsTo
     {
         return $this->belongsTo( Personne::class, "AUT_personne", 'PER_id');

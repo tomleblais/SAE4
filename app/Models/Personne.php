@@ -85,11 +85,13 @@ class Personne extends Model implements Authenticatable
 
     // Relationships
 
+    /** Get the authorizations of this person. */
     public function autorisations(): HasOne
     {
         return $this->hasOne(Autorisations::class, "AUT_personne", "PER_id");
     }
 
+    /** Get the adherent of this person. */
     public function adherent(): HasOne
     {
         return $this->hasOne(Adherent::class, "ADH_id", "PER_id");
@@ -103,32 +105,38 @@ class Personne extends Model implements Authenticatable
         return $this->PER_pass;
     }
 
+    /** Get the name of the unique identifier for the user. */
     public function getAuthIdentifierName(): string
     {
         return "PER_id";
     }
 
+    /** Get the unique identifier for the user. */
     public function getAuthIdentifier(): int
     {
         return $this->PER_id;
     }
 
+    /** Get the token value for the "remember me" session. */
     public function getRememberToken(): ?string
     {
         return $this->PER_remember_token;
     }
 
+    /** Set the token value for the "remember me" session. */
     public function setRememberToken($value)
     {
         $this->PER_remember_token = $value;
         $this->save();
     }
 
+    /** Get the column name for the "remember me" token. */
     public function getRememberTokenName(): string
     {
         return "PER_remember_token";
     }
 
+    /** Check if the person is a director of a section. */
     public function isDirector(): bool {
         return $this->autorisations()->exists() &&
             $this->autorisations->AUT_directeur_section;
@@ -138,30 +146,36 @@ class Personne extends Model implements Authenticatable
         return Autorisations::where('AUT_directeur_section', 1)->count() === 1 && $this->isDirector();
     }
 
+    /** Check if the person is a secretary. */
     public function isSecretary(): bool {
         return $this->autorisations()->exists() &&
             $this->autorisations->AUT_secretaire;
     }
 
+    /** Check if the person is a surface security. */
     public function isSurfaceSecurity(): bool {
         return $this->autorisations()->exists() &&
             $this->autorisations->AUT_securite_surface;
     }
 
+    /** Check if the person is a pilot. */
     public function isPilot(): bool {
         return $this->autorisations()->exists() &&
             $this->autorisations->AUT_pilote;
     }
 
+    /** Check if the person is an adherent. */
     public function isAdherent(): bool
     {
         return $this->adherent()->exists();
     }
 
+    /** Get the ID of the person. */
     public function getId(): int {
         return $this->PER_id;
     }
 
+    /** Get the full name of the person. */
     public function getText(): string {
         return "$this->PER_nom $this->PER_prenom";
     }

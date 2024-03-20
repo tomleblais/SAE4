@@ -46,7 +46,6 @@ class Inclut extends Model
      */
     protected $fillable = ['INC_palanquee', 'INC_adherent'];
 
-
     public function toArray(): array
     {
         $res = [
@@ -69,11 +68,21 @@ class Inclut extends Model
         return $res;
     }
 
+    /**
+     * Get the adherent that owns the Inclut
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function adherent(): BelongsTo
     {
         return $this->belongsTo(Adherent::class, "INC_adherent", "ADH_id");
     }
 
+    /**
+     * Get the palanquee that owns the Inclut
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function palanquee(): BelongsTo
     {
         return $this->belongsTo(Palanquee::class, "INC_palanquee", "PAL_id");
